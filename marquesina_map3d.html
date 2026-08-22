@@ -196,6 +196,12 @@ const MODULE_ID   = 'mod-sec-belvis-marq';         // "marquesina"
 const SQLJS_BASE  = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/';
 const LOGO_URL    = 'logo.png';
 
+// Timezone: measure_date is stored as Colombia local wall-clock (UTC-05:00) with no
+// zone marker. We parse it with that offset and always render in the same zone, so the
+// displayed time matches the stored value on any browser, regardless of the viewer's TZ.
+const TZ_OFFSET   = '-05:00';
+const DISPLAY_TZ  = 'America/Bogota';
+
 // Cleaning bounds + metric metadata
 const BOUNDS      = { temp:[10,45], hum:[5,100] };
 const METRIC_UNIT = { temp:'°C', hum:'%' };
@@ -755,9 +761,9 @@ function buildLabels(act,vMin,vMax){
 // ══════════════════════════════════════════════════════════════════════════
 const $=id=>document.getElementById(id);
 function fmtDate(ms){ if(ms==null||!isFinite(ms)) return '—';
-  return new Date(ms).toLocaleString('es-CO',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+  return new Date(ms).toLocaleString('es-CO',{timeZone:DISPLAY_TZ,day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
 function fmtHM(ms){ if(ms==null||!isFinite(ms)) return '—';
-  return new Date(ms).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}); }
+  return new Date(ms).toLocaleTimeString('es-CO',{timeZone:DISPLAY_TZ,hour:'2-digit',minute:'2-digit'}); }
 
 function updateUI(act,valid,vMin,vMax,T){
   const unit=METRIC_UNIT[currentMetric]; const vals=valid.map(o=>o.v);
@@ -844,7 +850,7 @@ async function loadAll(){
     const data=db.exec(`SELECT sensor_id,measure_date,data_value FROM sensor_data WHERE sensor_id IN (${ids.join(',')})`);
     if(data.length) for(const r of data[0].values){ total++; const sid=r[0],ds=r[1],raw=r[2]; const metric=metricById[sid]; if(!metric) continue;
       const c=cleanValue(raw,metric); if((typeof raw!=='number')||!c.valid) corrupt++; if(!c.valid) continue;
-      const t=Date.parse(String(ds).replace(' ','T')+'Z'); if(isNaN(t)) continue;
+      const t=Date.parse(String(ds).replace(' ','T')+TZ_OFFSET); if(isNaN(t)) continue;
       (readingsBySensor[sid]=readingsBySensor[sid]||[]).push({t,v:c.value}); }
   }
   Object.values(readingsBySensor).forEach(a=>a.sort((x,y)=>y.t-x.t)); db.close();
