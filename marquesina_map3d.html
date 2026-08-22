@@ -659,11 +659,6 @@ function currentTargetMs(){ return spine.length ? spine[Math.min(timeIndex,spine
 // ══════════════════════════════════════════════════════════════════════════
 //  RBF (thin-plate) + color
 // ══════════════════════════════════════════════════════════════════════════
-function buildRBF(pts,vals){ const n=pts.length; const phi=r2=>r2>0?r2*Math.log(Math.sqrt(r2)+1e-15):0; const mat=[];
-  for(let i=0;i<n;i++){mat[i]=[];for(let j=0;j<n;j++){const dx=pts[i][0]-pts[j][0],dy=pts[i][1]-pts[j][1],dz=pts[i][2]-pts[j][2];mat[i][j]=phi(dx*dx+dy*dy+dz*dz);}mat[i][n]=vals[i];}
-  for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(mat[r][c])>Math.abs(mat[p][c]))p=r;[mat[c],mat[p]]=[mat[p],mat[c]];const pc=mat[c][c];if(Math.abs(pc)<1e-12)continue;
-    for(let k=c;k<=n;k++)mat[c][k]/=pc;for(let r=0;r<n;r++){if(r===c)continue;const f=mat[r][c];for(let k=c;k<=n;k++)mat[r][k]-=f*mat[c][k];}}
-  const w=mat.map(r=>r[n]); return (qx,qy,qz)=>{let v=0;for(let i=0;i<n;i++){const dx=qx-pts[i][0],dy=qy-pts[i][1],dz=qz-pts[i][2];v+=w[i]*phi(dx*dx+dy*dy+dz*dz);}return v;};}
 const COLOR_STOPS=[[0,[26,111,255]],[.25,[0,212,255]],[.5,[0,255,136]],[.75,[255,204,0]],[.875,[255,107,53]],[1,[255,45,45]]];
 function valToRgb(t,vMin,vMax){const u=vMax>vMin?Math.max(0,Math.min(1,(t-vMin)/(vMax-vMin))):0.5;
   for(let i=0;i<COLOR_STOPS.length-1;i++){const[t0,c0]=COLOR_STOPS[i],[t1,c1]=COLOR_STOPS[i+1];if(u<=t1){const f=(u-t0)/(t1-t0);return c0.map((v,j)=>Math.round(v+f*(c1[j]-v)));}}return COLOR_STOPS[5][1];}
@@ -681,7 +676,7 @@ scene.add(new THREE.AmbientLight(0xffffff,0.8));
 const dl=new THREE.DirectionalLight(0xffffff,0.5); dl.position.set(20,40,20); scene.add(dl);
 const gBox=new THREE.Group(),gAxis=new THREE.Group(),gFeat=new THREE.Group(),gVol=new THREE.Group(),gPts=new THREE.Group(),gLabels=new THREE.Group();
 scene.add(gBox,gAxis,gFeat,gVol,gPts,gLabels);
-let volOpacity=0.40, ptsSizeFactor=1.0, rbfFn=null, snapVals=[];
+let volOpacity=0.40, ptsSizeFactor=1.0, fieldFn=null, snapVals=[];
 
 function BOX(){ const a=CONFIG.area; return { W:cm(a.x), H:cm(a.z), D:cm(a.y) }; } // W=width(X) H=height(Y) D=depth(Z)
 
@@ -707,7 +702,7 @@ function buildStatic(){
     gBox.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...v[a]),new THREE.Vector3(...v[b])]),mat));});
   const grid=new THREE.GridHelper(Math.max(W,D),Math.round(Math.max(W,D)),0x14202a,0x14202a); grid.position.set(W/2,0,D/2); gBox.add(grid);
   tag('FRENTE',W/2,0.25,0,'#7fd6ef'); tag('ATRÁS',W/2,0.25,D,'#7a96a3');
-  tag('IZQ.',0,0.25,D/2,'#7a96a3');   tag('DER.',W,0.25,D/2,'#7a96a3');
+  tag('DER.',0,0.25,D/2,'#7a96a3');   tag('IZQ.',W,0.25,D/2,'#7a96a3');
   (CONFIG.features||[]).forEach(f=>{
     const w=toWorld(f); const isDoor=(f.type==='door'); const col=isDoor?0xc1663a:0x3fa7c9;
     const three=new THREE.Color(col);
@@ -727,16 +722,37 @@ function applyState(){
   const valid=[]; act.forEach((s,i)=>{ if(snapVals[i]!=null) valid.push({s,v:snapVals[i]}); });
   let vMin=0,vMax=1;
   if(valid.length){ vMin=Math.min(...valid.map(o=>o.v)); vMax=Math.max(...valid.map(o=>o.v)); if(vMin===vMax){vMin-=1;vMax+=1;} }
-  rbfFn = valid.length>=4 ? buildRBF(valid.map(o=>[o.s.w.x,o.s.w.y,o.s.w.z]), valid.map(o=>o.v)) : null;
+  fieldFn = valid.length>=2 ? buildIDW(valid.map(o=>[o.s.w.x,o.s.w.y,o.s.w.z]), valid.map(o=>o.v)) : null;
   buildField(vMin,vMax); buildPoints(act,vMin,vMax); buildLabels(act,vMin,vMax); updateUI(act,valid,vMin,vMax,T);
 }
 
+// Inverse-distance weighting: the estimate is a weighted average of the sensors, so it
+// ALWAYS stays within [min,max] — no extrapolation past the scale, no red floor. It also
+// reports the distance to the nearest sensor so the field can fade where there's no data.
+function buildIDW(pts, vals){
+  const n=pts.length, P=3;                     // power: higher = more local
+  return (qx,qy,qz)=>{
+    let num=0, den=0, dmin=Infinity;
+    for(let i=0;i<n;i++){
+      const dx=qx-pts[i][0], dy=qy-pts[i][1], dz=qz-pts[i][2];
+      const d2=dx*dx+dy*dy+dz*dz; if(d2<dmin) dmin=d2;
+      if(d2<1e-6) return {v:vals[i], dmin:0};
+      const w=1/Math.pow(d2, P/2);
+      num+=w*vals[i]; den+=w;
+    }
+    return {v:num/den, dmin:Math.sqrt(dmin)};
+  };
+}
+
 function buildField(vMin,vMax){
-  gVol.clear(); if(!rbfFn) return;
+  gVol.clear(); if(!fieldFn) return;
   const {W,H,D}=BOX(); const nx=12,ny=9,nz=Math.max(12,Math.round(D*2.2));
+  const FADE=2.2;                              // metres: cull field points farther than this from any sensor
   const pos=[],col=[];
   for(let ix=0;ix<nx;ix++)for(let iy=0;iy<ny;iy++)for(let iz=0;iz<nz;iz++){
-    const x=ix*W/(nx-1),y=iy*H/(ny-1),z=iz*D/(nz-1); const val=rbfFn(x,y,z); const rgb=valToRgb(val,vMin,vMax);
+    const x=ix*W/(nx-1),y=iy*H/(ny-1),z=iz*D/(nz-1);
+    const r=fieldFn(x,y,z); if(r.dmin>FADE) continue;    // no sensor nearby -> don't imply data
+    const rgb=valToRgb(r.v,vMin,vMax);
     pos.push(x,y,z);col.push(rgb[0]/255,rgb[1]/255,rgb[2]/255);}
   const geo=new THREE.BufferGeometry();
   geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
