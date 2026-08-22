@@ -113,7 +113,8 @@
     <div class="header-dims">
       <span id="hdr-dims"><strong>—</strong></span>
       &nbsp;|&nbsp; <strong id="hdr-count">—</strong> sensores
-      <span id="hdr-source" class="badge demo">SIN DATOS</span><br/>
+      <span id="hdr-source" class="badge demo">SIN DATOS</span>
+      <span id="hdr-config" class="badge demo">CONFIG —</span><br/>
       <span id="hdr-snapshot">—</span>
     </div>
   </header>
@@ -194,7 +195,7 @@ const DB_PATH     = 'datos_sensores.db';
 const CONFIG_PATH = 'config.json';                 // editable layout, same folder
 const MODULE_ID   = 'mod-sec-belvis-marq';         // "marquesina"
 const SQLJS_BASE  = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/';
-const LOGO_URL    = 'logo.png';
+const LOGO_URL    = 'https://raw.githubusercontent.com/JTunjo/asset_hosting/refs/heads/main/Tunjo_h.png';
 
 // Timezone: measure_date is stored as Colombia local wall-clock (UTC-05:00) with no
 // zone marker. We parse it with that offset and always render in the same zone, so the
@@ -608,6 +609,7 @@ function cleanValue(raw, metric){
 //  MODEL
 // ══════════════════════════════════════════════════════════════════════════
 let CONFIG=null;
+let CONFIG_SOURCE='fallback';           // 'primary' = external config.json, 'fallback' = embedded copy
 let SENSORS=[];                         // [{sensor_id,metric,label,cm:{x,y,z},w:{x,y,z},series[]}]
 let META={rows:0,corrupted:0,mapped:0,source:'demo'};
 let currentMetric='temp';
@@ -828,11 +830,17 @@ function updateUI(act,valid,vMin,vMax,T){
 
 function writeStatus(demoReason){
   const el=$('status-line');
+  // config-source badge + label
+  const primary = CONFIG_SOURCE==='primary';
+  const cb=$('hdr-config'); cb.className='badge '+(primary?'live':'demo'); cb.textContent=primary?'CONFIG: EXTERNA':'CONFIG: FALLBACK';
+  const cfgLine = primary
+    ? `Layout: <span class="ok">config.json</span> (externa)`
+    : `Layout: <span class="bad">incrustada</span> (fallback en HTML)`;
   if(META.source==='db'){ const pct=META.rows?(100*META.corrupted/META.rows).toFixed(1):'0';
-    el.innerHTML=`Origen: <b>${DB_PATH}</b> + <b>${CONFIG_PATH}</b><br>Lecturas: <b>${META.rows.toLocaleString('es-CO')}</b><br>
+    el.innerHTML=`Origen: <b>${DB_PATH}</b> + <b>${CONFIG_PATH}</b><br>${cfgLine}<br>Lecturas: <b>${META.rows.toLocaleString('es-CO')}</b><br>
       Corruptas depuradas: <span class="bad">${META.corrupted}</span> (${pct}%)<br>Sensores ubicados: <span class="ok">${META.mapped}</span><br>Ventanas 5 min: <b>${META.windows||0}</b> (mediana)`;
   } else {
-    el.innerHTML=`<span class="bad">Base de datos no cargada.</span><br>${demoReason?('<span style="color:#7a96a3">'+demoReason+'</span><br>'):''}
+    el.innerHTML=`<span class="bad">Base de datos no cargada.</span><br>${cfgLine}<br>${demoReason?('<span style="color:#7a96a3">'+demoReason+'</span><br>'):''}
       Mostrando <b>layout demo</b>.<br>Publica en http (GitHub Pages) para leer <code>${DB_PATH}</code>.`;
   }
 }
@@ -844,8 +852,9 @@ function showOverlay(msg,sub,isErr){const o=$('overlay');o.style.display='flex';
 function hideOverlay(){$('overlay').style.display='none';}
 
 async function fetchConfig(){
-  try{ const r=await fetch(CONFIG_PATH,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); return await r.json(); }
-  catch(e){ console.warn('config.json fallback:',e); return FALLBACK_CONFIG; }
+  try{ const r=await fetch(CONFIG_PATH,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status);
+       const j=await r.json(); CONFIG_SOURCE='primary'; return j; }
+  catch(e){ console.warn('config.json fallback:',e); CONFIG_SOURCE='fallback'; return FALLBACK_CONFIG; }
 }
 
 async function loadAll(){
