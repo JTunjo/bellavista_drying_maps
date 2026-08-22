@@ -24,14 +24,14 @@
       "name": "Ventana E",
       "type": "window",
       "x": 440,
-      "y": 1200,
+      "y": 370,
       "z": 220
     },
     {
       "name": "Ventana O",
       "type": "window",
       "x": 440,
-      "y": 2700,
+      "y": 930,
       "z": 220
     }
   ],
