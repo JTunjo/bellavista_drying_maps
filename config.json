@@ -1,0 +1,340 @@
+{
+  "_readme": [
+    "Coordenadas en CENTIMETROS, medidas desde la esquina INFERIOR-IZQUIERDA-FRONTAL (0,0,0).",
+    "x = ancho (izquierda->derecha) | y = profundidad (frente->fondo) | z = altura (piso->techo).",
+    "Ej: area x:440,y:1700,z:230 => 4.40m ancho, 17m profundidad, 2.30m alto.",
+    "Ej: sensor x:210,y:125,z:110 => 1.25m adentro, 1.10m de altura, a 2.10m del muro izquierdo.",
+    "Las posiciones de los sensores aqui son PLACEHOLDERS: reemplazalas con tus medidas reales.",
+    "La altura (z) puede diferir por sensor dentro de una misma linea."
+  ],
+  "area": {
+    "x": 440,
+    "y": 1700,
+    "z": 230
+  },
+  "features": [
+    {
+      "name": "Puerta",
+      "type": "door",
+      "x": 220,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "name": "Ventana E",
+      "type": "window",
+      "x": 440,
+      "y": 600,
+      "z": 150
+    },
+    {
+      "name": "Ventana O",
+      "type": "window",
+      "x": 0,
+      "y": 1100,
+      "z": 150
+    }
+  ],
+  "sensors": [
+    {
+      "sensor_id": 302,
+      "metric": "temp",
+      "label": "Marquesina T1",
+      "line": 1,
+      "pos": 1,
+      "x": 110,
+      "y": 283,
+      "z": 210
+    },
+    {
+      "sensor_id": 301,
+      "metric": "hum",
+      "label": "Marquesina H1",
+      "line": 1,
+      "pos": 1,
+      "x": 110,
+      "y": 283,
+      "z": 210
+    },
+    {
+      "sensor_id": 304,
+      "metric": "temp",
+      "label": "Marquesina T2",
+      "line": 1,
+      "pos": 2,
+      "x": 220,
+      "y": 283,
+      "z": 170
+    },
+    {
+      "sensor_id": 303,
+      "metric": "hum",
+      "label": "Marquesina H2",
+      "line": 1,
+      "pos": 2,
+      "x": 220,
+      "y": 283,
+      "z": 170
+    },
+    {
+      "sensor_id": 306,
+      "metric": "temp",
+      "label": "Marquesina T3",
+      "line": 1,
+      "pos": 3,
+      "x": 330,
+      "y": 283,
+      "z": 195
+    },
+    {
+      "sensor_id": 305,
+      "metric": "hum",
+      "label": "Marquesina H3",
+      "line": 1,
+      "pos": 3,
+      "x": 330,
+      "y": 283,
+      "z": 195
+    },
+    {
+      "sensor_id": 308,
+      "metric": "temp",
+      "label": "Marquesina T4",
+      "line": 2,
+      "pos": 1,
+      "x": 110,
+      "y": 567,
+      "z": 210
+    },
+    {
+      "sensor_id": 307,
+      "metric": "hum",
+      "label": "Marquesina H4",
+      "line": 2,
+      "pos": 1,
+      "x": 110,
+      "y": 567,
+      "z": 210
+    },
+    {
+      "sensor_id": 310,
+      "metric": "temp",
+      "label": "Marquesina T5",
+      "line": 2,
+      "pos": 2,
+      "x": 220,
+      "y": 567,
+      "z": 170
+    },
+    {
+      "sensor_id": 309,
+      "metric": "hum",
+      "label": "Marquesina H5",
+      "line": 2,
+      "pos": 2,
+      "x": 220,
+      "y": 567,
+      "z": 170
+    },
+    {
+      "sensor_id": 312,
+      "metric": "temp",
+      "label": "Marquesina T6",
+      "line": 2,
+      "pos": 3,
+      "x": 330,
+      "y": 567,
+      "z": 195
+    },
+    {
+      "sensor_id": 311,
+      "metric": "hum",
+      "label": "Marquesina H6",
+      "line": 2,
+      "pos": 3,
+      "x": 330,
+      "y": 567,
+      "z": 195
+    },
+    {
+      "sensor_id": 314,
+      "metric": "temp",
+      "label": "Marquesina T7",
+      "line": 3,
+      "pos": 1,
+      "x": 110,
+      "y": 850,
+      "z": 210
+    },
+    {
+      "sensor_id": 313,
+      "metric": "hum",
+      "label": "Marquesina H7",
+      "line": 3,
+      "pos": 1,
+      "x": 110,
+      "y": 850,
+      "z": 210
+    },
+    {
+      "sensor_id": 316,
+      "metric": "temp",
+      "label": "Marquesina T8",
+      "line": 3,
+      "pos": 2,
+      "x": 220,
+      "y": 850,
+      "z": 170
+    },
+    {
+      "sensor_id": 315,
+      "metric": "hum",
+      "label": "Marquesina H8",
+      "line": 3,
+      "pos": 2,
+      "x": 220,
+      "y": 850,
+      "z": 170
+    },
+    {
+      "sensor_id": 318,
+      "metric": "temp",
+      "label": "Marquesina T9",
+      "line": 3,
+      "pos": 3,
+      "x": 330,
+      "y": 850,
+      "z": 195
+    },
+    {
+      "sensor_id": 317,
+      "metric": "hum",
+      "label": "Marquesina H9",
+      "line": 3,
+      "pos": 3,
+      "x": 330,
+      "y": 850,
+      "z": 195
+    },
+    {
+      "sensor_id": 320,
+      "metric": "temp",
+      "label": "Marquesina T10",
+      "line": 4,
+      "pos": 1,
+      "x": 110,
+      "y": 1133,
+      "z": 210
+    },
+    {
+      "sensor_id": 319,
+      "metric": "hum",
+      "label": "Marquesina H10",
+      "line": 4,
+      "pos": 1,
+      "x": 110,
+      "y": 1133,
+      "z": 210
+    },
+    {
+      "sensor_id": 322,
+      "metric": "temp",
+      "label": "Marquesina T11",
+      "line": 4,
+      "pos": 2,
+      "x": 220,
+      "y": 1133,
+      "z": 170
+    },
+    {
+      "sensor_id": 321,
+      "metric": "hum",
+      "label": "Marquesina H11",
+      "line": 4,
+      "pos": 2,
+      "x": 220,
+      "y": 1133,
+      "z": 170
+    },
+    {
+      "sensor_id": 324,
+      "metric": "temp",
+      "label": "Marquesina T12",
+      "line": 4,
+      "pos": 3,
+      "x": 330,
+      "y": 1133,
+      "z": 195
+    },
+    {
+      "sensor_id": 323,
+      "metric": "hum",
+      "label": "Marquesina H12",
+      "line": 4,
+      "pos": 3,
+      "x": 330,
+      "y": 1133,
+      "z": 195
+    },
+    {
+      "sensor_id": 326,
+      "metric": "temp",
+      "label": "Marquesina T13",
+      "line": 5,
+      "pos": 1,
+      "x": 110,
+      "y": 1417,
+      "z": 210
+    },
+    {
+      "sensor_id": 325,
+      "metric": "hum",
+      "label": "Marquesina H13",
+      "line": 5,
+      "pos": 1,
+      "x": 110,
+      "y": 1417,
+      "z": 210
+    },
+    {
+      "sensor_id": 328,
+      "metric": "temp",
+      "label": "Marquesina T14",
+      "line": 5,
+      "pos": 2,
+      "x": 220,
+      "y": 1417,
+      "z": 170
+    },
+    {
+      "sensor_id": 327,
+      "metric": "hum",
+      "label": "Marquesina H14",
+      "line": 5,
+      "pos": 2,
+      "x": 220,
+      "y": 1417,
+      "z": 170
+    },
+    {
+      "sensor_id": 330,
+      "metric": "temp",
+      "label": "Marquesina T15",
+      "line": 5,
+      "pos": 3,
+      "x": 330,
+      "y": 1417,
+      "z": 195
+    },
+    {
+      "sensor_id": 329,
+      "metric": "hum",
+      "label": "Marquesina H15",
+      "line": 5,
+      "pos": 3,
+      "x": 330,
+      "y": 1417,
+      "z": 195
+    }
+  ]
+}

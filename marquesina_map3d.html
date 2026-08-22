@@ -8,62 +8,36 @@
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg:      #eef3f6;
-    --panel:   #ffffff;
-    --border:  #c8d8e2;
-    --accent:  #0d6986;
-    --accent2: #c1663a;
-    --text:    #1a2e38;
-    --muted:   #7a96a3;
-    --card-bg: #e4edf3;
-    --warn:    #b7791f;
-    --mono:    'Montserrat', sans-serif;
-    --sans:    'Montserrat', sans-serif;
+    --bg:#eef3f6; --panel:#ffffff; --border:#c8d8e2; --accent:#0d6986; --accent2:#c1663a;
+    --text:#1a2e38; --muted:#7a96a3; --card-bg:#e4edf3; --warn:#b7791f;
+    --door:#c1663a; --window:#3fa7c9;
+    --mono:'Montserrat',sans-serif; --sans:'Montserrat',sans-serif;
   }
   html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); }
-  #app {
-    display:grid; grid-template-rows:64px 1fr;
-    grid-template-columns:300px 1fr; width:100vw; height:100vh;
-  }
-  header {
-    grid-column:1/-1; display:flex; align-items:center; gap:18px;
-    padding:0 24px; border-bottom:1px solid var(--border);
-    background:var(--panel); position:relative; z-index:10;
-    box-shadow:0 1px 4px rgba(0,0,0,0.07);
-  }
-  /* ── Logo slot (drop logo.png next to this file, or change LOGO_URL) ── */
+  #app { display:grid; grid-template-rows:64px 1fr; grid-template-columns:300px 1fr; width:100vw; height:100vh; }
+  header { grid-column:1/-1; display:flex; align-items:center; gap:18px; padding:0 24px;
+    border-bottom:1px solid var(--border); background:var(--panel); position:relative; z-index:10; box-shadow:0 1px 4px rgba(0,0,0,0.07); }
   .brand { display:flex; align-items:center; gap:14px; }
   #logo { height:40px; width:auto; max-width:180px; object-fit:contain; display:block; }
-  .logo-ph {
-    height:40px; width:104px; border:1px dashed var(--border); border-radius:6px;
-    display:none; align-items:center; justify-content:center;
-    font-family:var(--mono); font-size:9px; letter-spacing:.16em; color:var(--muted);
-  }
-  header h1 { font-family:var(--sans); font-size:15px; font-weight:800; letter-spacing:.04em; color:var(--text); }
+  .logo-ph { height:40px; width:104px; border:1px dashed var(--border); border-radius:6px; display:none;
+    align-items:center; justify-content:center; font-family:var(--mono); font-size:9px; letter-spacing:.16em; color:var(--muted); }
+  header h1 { font-family:var(--sans); font-size:15px; font-weight:800; letter-spacing:.04em; }
   header h1 span { color:var(--accent); font-weight:700; }
   .header-dims { margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:.06em; text-align:right; line-height:1.7; }
   .header-dims strong { color:var(--accent); font-weight:700; }
   .badge { display:inline-block; font-family:var(--mono); font-size:8px; letter-spacing:.1em; padding:2px 7px; border-radius:10px; margin-left:6px; }
-  .badge.live { background:#d6efe4; color:#137a52; }
-  .badge.demo { background:#fbeccb; color:var(--warn); }
+  .badge.live { background:#d6efe4; color:#137a52; } .badge.demo { background:#fbeccb; color:var(--warn); }
 
-  aside {
-    background:var(--panel); border-right:1px solid var(--border);
-    display:flex; flex-direction:column; gap:0; overflow-y:auto; overflow-x:hidden;
-  }
+  aside { background:var(--panel); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; }
   .section { padding:15px 18px; border-bottom:1px solid var(--border); }
   .section-title { font-family:var(--mono); font-size:9px; letter-spacing:.14em; color:var(--muted); text-transform:uppercase; margin-bottom:11px; }
   .grad-bar { height:10px; border-radius:3px; background:linear-gradient(to right,#1a6fff,#00d4ff,#00ff88,#ffcc00,#ff6b35,#ff2d2d); margin-bottom:6px; }
   .grad-labels { display:flex; justify-content:space-between; font-family:var(--mono); font-size:9px; color:var(--muted); }
-  .grad-labels span { color:var(--text); font-weight:700; }
-  .grad-unit { color:var(--muted)!important; font-weight:400!important; }
+  .grad-labels span { color:var(--text); font-weight:700; } .grad-unit { color:var(--muted)!important; font-weight:400!important; }
 
   .metric-toggle { display:flex; gap:6px; }
-  .metric-btn {
-    flex:1; font-family:var(--mono); font-size:10px; padding:8px 0; letter-spacing:.06em;
-    border:1px solid var(--border); border-radius:6px; background:var(--card-bg);
-    color:var(--muted); cursor:pointer; transition:all .15s; font-weight:700;
-  }
+  .metric-btn { flex:1; font-family:var(--mono); font-size:10px; padding:8px 0; letter-spacing:.06em; border:1px solid var(--border);
+    border-radius:6px; background:var(--card-bg); color:var(--muted); cursor:pointer; transition:all .15s; font-weight:700; }
   .metric-btn.on { border-color:var(--accent); color:#fff; background:linear-gradient(135deg,var(--accent),#1a8fa8); }
 
   .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
@@ -73,17 +47,12 @@
   .stat-val sup { font-size:10px; color:var(--muted); font-weight:400; }
 
   .sensor-list { display:flex; flex-direction:column; gap:5px; }
-  .sensor-row {
-    display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10px;
-    padding:5px 8px; border-radius:4px; background:var(--card-bg); border:1px solid var(--border);
-    cursor:pointer; transition:border-color .15s, background .15s;
-  }
+  .sensor-row { display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10px; padding:5px 8px; border-radius:4px;
+    background:var(--card-bg); border:1px solid var(--border); cursor:pointer; transition:border-color .15s, background .15s; }
   .sensor-row:hover { border-color:var(--accent); background:#d8eaf2; }
-  .sensor-row.active { border-color:var(--accent); background:#c4dce8; }
-  .sensor-row.stale { opacity:.6; }
+  .sensor-row.active { border-color:var(--accent); background:#c4dce8; } .sensor-row.stale { opacity:.6; }
   .sensor-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-  .sensor-id { color:var(--muted); width:30px; }
-  .sensor-pos { color:var(--muted); font-size:8px; }
+  .sensor-id { color:var(--muted); width:34px; } .sensor-pos { color:var(--muted); font-size:8px; }
   .sensor-val { color:var(--text); margin-left:auto; font-weight:700; }
 
   .ctrl-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
@@ -93,53 +62,34 @@
   input[type=range]::-moz-range-thumb { width:12px; height:12px; border:none; border-radius:50%; background:var(--accent); cursor:pointer; }
   .ctrl-val { font-family:var(--mono); font-size:9px; color:var(--text); width:34px; text-align:right; }
 
-  .time-readout { font-family:var(--mono); font-size:10px; color:var(--accent); font-weight:700; text-align:center; margin-bottom:8px; }
+  .time-readout { font-family:var(--mono); font-size:11px; color:var(--accent); font-weight:700; text-align:center; margin-bottom:8px; }
   .time-sub { font-family:var(--mono); font-size:8px; color:var(--muted); text-align:center; }
 
   .toggle-row { display:flex; gap:6px; flex-wrap:wrap; }
-  .toggle-btn {
-    font-family:var(--mono); font-size:9px; padding:5px 9px;
-    border:1px solid var(--border); border-radius:4px;
-    background:var(--card-bg); color:var(--muted); cursor:pointer; transition:all .15s; letter-spacing:.05em;
-  }
+  .toggle-btn { font-family:var(--mono); font-size:9px; padding:5px 9px; border:1px solid var(--border); border-radius:4px;
+    background:var(--card-bg); color:var(--muted); cursor:pointer; transition:all .15s; letter-spacing:.05em; }
   .toggle-btn.on { border-color:var(--accent); color:var(--accent); background:#cce5ef; }
 
-  .btn {
-    margin-top:2px; width:100%; padding:9px;
-    background:linear-gradient(135deg,var(--accent) 0%,#1a8fa8 100%);
-    border:none; border-radius:6px; font-family:var(--mono); font-size:10px;
-    letter-spacing:.08em; color:#fff; font-weight:700; cursor:pointer; transition:opacity .15s;
-  }
+  .btn { margin-top:2px; width:100%; padding:9px; background:linear-gradient(135deg,var(--accent) 0%,#1a8fa8 100%); border:none; border-radius:6px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.08em; color:#fff; font-weight:700; cursor:pointer; transition:opacity .15s; }
   .btn:hover { opacity:.85; }
   .status-line { font-family:var(--mono); font-size:9px; color:var(--muted); line-height:1.9; }
-  .status-line b { color:var(--text); font-weight:700; }
-  .status-line .ok { color:#137a52; font-weight:700; }
-  .status-line .bad { color:var(--warn); font-weight:700; }
+  .status-line b { color:var(--text); font-weight:700; } .status-line .ok { color:#137a52; font-weight:700; } .status-line .bad { color:var(--warn); font-weight:700; }
 
   #canvas-wrap { position:relative; overflow:hidden; }
   #three-canvas { display:block; width:100%; height:100%; }
-  #tooltip {
-    position:absolute; pointer-events:none;
-    background:rgba(14,20,25,.95); border:1px solid var(--accent);
-    border-radius:6px; padding:8px 12px; font-family:var(--mono); font-size:10px;
-    color:#dfeaf0; display:none; line-height:1.7; z-index:5;
-  }
+  #tooltip { position:absolute; pointer-events:none; background:rgba(14,20,25,.95); border:1px solid var(--accent); border-radius:6px;
+    padding:8px 12px; font-family:var(--mono); font-size:10px; color:#dfeaf0; display:none; line-height:1.7; z-index:5; }
   .hint { position:absolute; bottom:14px; right:16px; font-family:var(--mono); font-size:9px; color:rgba(255,255,255,0.4); text-align:right; pointer-events:none; line-height:1.8; }
-  #overlay {
-    position:absolute; inset:0; background:rgba(8,12,16,0.92); z-index:20;
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
-    font-family:var(--mono); color:#cfe0e8; text-align:center; padding:30px;
-  }
-  #overlay .spinner { width:34px; height:34px; border:3px solid rgba(255,255,255,.15); border-top-color:var(--accent); border-radius:50%; animation:spin 0.9s linear infinite; }
+  #overlay { position:absolute; inset:0; background:rgba(8,12,16,0.92); z-index:20; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:14px; font-family:var(--mono); color:#cfe0e8; text-align:center; padding:30px; }
+  #overlay .spinner { width:34px; height:34px; border:3px solid rgba(255,255,255,.15); border-top-color:var(--accent); border-radius:50%; animation:spin .9s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
   #overlay .msg { font-size:12px; letter-spacing:.05em; max-width:460px; line-height:1.8; }
   #overlay .sub { font-size:10px; color:var(--muted); max-width:460px; line-height:1.8; }
-  #overlay.err .spinner { display:none; }
-  #overlay code { background:rgba(255,255,255,.08); padding:1px 6px; border-radius:4px; color:#8fd0e6; }
+  #overlay.err .spinner { display:none; } #overlay code { background:rgba(255,255,255,.08); padding:1px 6px; border-radius:4px; color:#8fd0e6; }
 
-  ::-webkit-scrollbar { width:5px; }
-  ::-webkit-scrollbar-track { background:var(--bg); }
-  ::-webkit-scrollbar-thumb { background:#b0c8d4; border-radius:2px; }
+  ::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-track { background:var(--bg); } ::-webkit-scrollbar-thumb { background:#b0c8d4; border-radius:2px; }
 </style>
 </head>
 <body>
@@ -175,7 +125,7 @@
     </div>
 
     <div class="section">
-      <div class="section-title">Estadísticas</div>
+      <div class="section-title">Estadísticas · instante actual</div>
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-label">Mínimo</div><div class="stat-val" id="s-min">—<sup id="u-min">°C</sup></div></div>
         <div class="stat-card"><div class="stat-label">Máximo</div><div class="stat-val" id="s-max">—<sup id="u-max">°C</sup></div></div>
@@ -187,9 +137,7 @@
     <div class="section">
       <div class="section-title">Instante</div>
       <div class="time-readout" id="time-readout">—</div>
-      <div class="ctrl-row" style="margin-bottom:4px">
-        <input type="range" id="sl-time" min="0" max="0" value="0" step="1" style="flex:1"/>
-      </div>
+      <div class="ctrl-row" style="margin-bottom:4px"><input type="range" id="sl-time" min="0" max="0" value="0" step="1" style="flex:1"/></div>
       <div class="time-sub" id="time-sub">Arrastra para recorrer el histórico · fin = último dato</div>
     </div>
 
@@ -200,21 +148,13 @@
 
     <div class="section">
       <div class="section-title">Visualización</div>
-      <div class="ctrl-row">
-        <span class="ctrl-label">Opacidad campo</span>
-        <input type="range" id="sl-opacity" min="0" max="100" value="55"/>
-        <span class="ctrl-val" id="sl-opacity-val">55%</span>
-      </div>
-      <div class="ctrl-row">
-        <span class="ctrl-label">Tamaño pts.</span>
-        <input type="range" id="sl-size" min="4" max="30" value="12"/>
-        <span class="ctrl-val" id="sl-size-val">12</span>
-      </div>
+      <div class="ctrl-row"><span class="ctrl-label">Opacidad campo</span><input type="range" id="sl-opacity" min="0" max="100" value="40"/><span class="ctrl-val" id="sl-opacity-val">40%</span></div>
+      <div class="ctrl-row"><span class="ctrl-label">Tamaño pts.</span><input type="range" id="sl-size" min="4" max="30" value="12"/><span class="ctrl-val" id="sl-size-val">12</span></div>
       <div class="toggle-row">
-        <button class="toggle-btn on" id="tog-surf">Campo</button>
-        <button class="toggle-btn" id="tog-vol">Volumen</button>
+        <button class="toggle-btn on" id="tog-vol">Campo 3D</button>
         <button class="toggle-btn on" id="tog-pts">Sensores</button>
         <button class="toggle-btn on" id="tog-box">Estructura</button>
+        <button class="toggle-btn on" id="tog-feat">Puntos ref.</button>
         <button class="toggle-btn on" id="tog-labels">Etiquetas</button>
       </div>
     </div>
@@ -222,19 +162,15 @@
     <div class="section">
       <div class="section-title">Fuente de datos</div>
       <div class="status-line" id="status-line">Inicializando…</div>
-      <button class="btn" id="btn-reload" style="margin-top:10px">↺ RECARGAR BASE DE DATOS</button>
+      <button class="btn" id="btn-reload" style="margin-top:10px">↺ RECARGAR</button>
     </div>
   </aside>
 
   <div id="canvas-wrap">
     <canvas id="three-canvas"></canvas>
     <div id="tooltip"></div>
-    <div class="hint">Clic + arrastrar · Rotar<br>Scroll · Zoom<br>Clic derecho · Desplazar<br>Hover sensor · Info<br><strong style="color:rgba(255,255,255,0.6)">[0]</strong> · Vista frontal</div>
-    <div id="overlay">
-      <div class="spinner"></div>
-      <div class="msg" id="overlay-msg">Cargando base de datos…</div>
-      <div class="sub" id="overlay-sub"></div>
-    </div>
+    <div class="hint">Clic + arrastrar · Rotar<br>Scroll · Zoom<br>Clic derecho · Desplazar<br>Hover · Info<br><strong style="color:rgba(255,255,255,0.6)">[0]</strong> · Vista frontal</div>
+    <div id="overlay"><div class="spinner"></div><div class="msg" id="overlay-msg">Cargando…</div><div class="sub" id="overlay-sub"></div></div>
   </div>
 </div>
 
@@ -242,638 +178,695 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════════════════════
-//  CONFIG  — everything you might want to tweak lives here
+//  CONFIG
 // ══════════════════════════════════════════════════════════════════════════
-const DB_PATH    = 'datos_sensores.db';           // SQLite file, same folder as this page
-const MODULE_ID  = 'mod-sec-belvis-marq';         // "marquesina"
-const SQLJS_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/';
-const LOGO_URL   = 'logo.png';                    // <-- put your logo file here (same folder)
+const DB_PATH     = 'datos_sensores.db';
+const CONFIG_PATH = 'config.json';                 // editable layout, same folder
+const MODULE_ID   = 'mod-sec-belvis-marq';         // "marquesina"
+const SQLJS_BASE  = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/';
+const LOGO_URL    = 'logo.png';
 
-// Physical area of the marquesina (metres). 5 positions deep × 3 wide, one height layer.
-// L = depth (front→back), A = width (right→left), H = structure height.
-const DIMS     = { L: 17.0, A: 6.0, H: 3.0 };
-const SENSOR_Z = 2.30;                             // height of the sensor plane
-const GRID     = { depth: 5, width: 3 };          // X∈1..5 (kept), Y∈1..3
+// Cleaning bounds + metric metadata
+const BOUNDS      = { temp:[10,45], hum:[5,100] };
+const METRIC_UNIT = { temp:'°C', hum:'%' };
+const METRIC_NAME = { temp:'temperatura', hum:'humedad' };
 
-// Orientation. If the rendered map comes out mirrored vs. the real site,
-// flip one of these to true (no other change needed).
-const FLIP_DEPTH = false;   // false: X=1 at FRENTE (L≈0)  →  X=5 at ATRÁS
-const FLIP_WIDTH = false;   // false: Y=1 at DERECHA (A≈0) →  Y=3 at IZQUIERDA
+// Coordinate convention (from config.json), all in CENTIMETRES, origin = bottom-left-front:
+//   x = width  (left→right)      y = depth (front→back)      z = height (floor→ceiling)
+// Rendered in three-space as: worldX = x, worldY = z (up), worldZ = y  (metres = cm/100)
+const cm = v => v/100;
+const toWorld = p => ({ x: cm(p.x), y: cm(p.z), z: cm(p.y) });
 
-// Plausible physical bounds used to reject corrupted readings (see cleanValue).
-const BOUNDS = { temp: [10, 45], hum: [5, 100] };
-const METRIC_UNIT = { temp: '°C', hum: '%' };
-const METRIC_NAME = { temp: 'temperatura', hum: 'humedad' };
-
-// Fallback snapshot (the known-good latest values) used ONLY if the DB can't be
-// fetched — e.g. when previewing via file:// . Keyed by "X-Y".
-const DEMO = {
-  temp: {'1-1':29.1,'1-2':27.9,'1-3':27.4,'2-1':27.7,'2-2':27.9,'2-3':27.6,'3-1':28.5,'3-2':27.7,'3-3':27.5,'4-1':28.5,'4-2':27.5,'4-3':27.0,'5-1':29.2,'5-2':27.6,'5-3':27.4},
-  hum:  {'1-1':52.0,'1-2':57.8,'1-3':57.1,'2-1':57.2,'2-2':56.2,'2-3':60.8,'3-1':52.7,'3-2':56.8,'3-3':57.9,'4-1':53.5,'4-2':57.1,'4-3':58.4,'5-1':51.4,'5-2':57.0,'5-3':58.3}
-};
-
-// ── Logo wiring (graceful placeholder if no file present) ──────────────────
-(function(){
-  const img = document.getElementById('logo'), ph = document.getElementById('logo-ph');
-  img.onerror = () => { img.style.display='none'; ph.style.display='flex'; };
-  img.src = LOGO_URL;
-})();
-
-// ══════════════════════════════════════════════════════════════════════════
-//  Minimal OrbitControls (self-contained, no external dependency)
-// ══════════════════════════════════════════════════════════════════════════
-THREE.OrbitControls = function(camera, domEl) {
-  this.camera=camera; this.domEl=domEl; this.target=new THREE.Vector3();
-  this.enableDamping=true; this.dampingFactor=0.08; this.rotateSpeed=1.0;
-  this.zoomSpeed=1.0; this.panSpeed=0.8; this.minDistance=1; this.maxDistance=300;
-  var _this=this, STATE={NONE:-1,ROTATE:0,ZOOM:1,PAN:2}, state=STATE.NONE;
-  var spherical=new THREE.Spherical(), sphericalDelta=new THREE.Spherical(), scale=1;
-  var panOffset=new THREE.Vector3();
-  var rotateStart=new THREE.Vector2(), rotateEnd=new THREE.Vector2(), rotateDelta=new THREE.Vector2();
-  var panStart=new THREE.Vector2(), panEnd=new THREE.Vector2(), panDelta=new THREE.Vector2();
-  function getZoomScale(){ return Math.pow(0.95,_this.zoomSpeed); }
-  function rotateLeft(a){ sphericalDelta.theta-=a; }
-  function rotateUp(a){ sphericalDelta.phi-=a; }
-  var panLeftV=new THREE.Vector3(), panUpV=new THREE.Vector3();
-  function panLeft(d,m){ panLeftV.setFromMatrixColumn(m,0); panLeftV.multiplyScalar(-d); panOffset.add(panLeftV); }
-  function panUp(d,m){ panUpV.setFromMatrixColumn(m,1); panUpV.multiplyScalar(d); panOffset.add(panUpV); }
-  function pan(dx,dy){ var el=_this.domEl, fov=_this.camera.fov*Math.PI/180;
-    var tD=_this.camera.position.distanceTo(_this.target), thH=2*Math.tan(fov/2)*tD;
-    panLeft(dx*thH/el.clientHeight*_this.panSpeed,_this.camera.matrix);
-    panUp(dy*thH/el.clientHeight*_this.panSpeed,_this.camera.matrix); }
-  this.update=function(){
-    var offset=new THREE.Vector3();
-    var quat=new THREE.Quaternion().setFromUnitVectors(camera.up,new THREE.Vector3(0,1,0));
-    var quatInv=quat.clone().invert();
-    offset.copy(this.camera.position).sub(this.target); offset.applyQuaternion(quat);
-    spherical.setFromVector3(offset);
-    spherical.theta+=sphericalDelta.theta; spherical.phi+=sphericalDelta.phi;
-    spherical.phi=Math.max(0.01,Math.min(Math.PI-0.01,spherical.phi));
-    spherical.radius*=scale;
-    spherical.radius=Math.max(this.minDistance,Math.min(this.maxDistance,spherical.radius));
-    this.target.add(panOffset);
-    offset.setFromSpherical(spherical); offset.applyQuaternion(quatInv);
-    this.camera.position.copy(this.target).add(offset); this.camera.lookAt(this.target);
-    if(this.enableDamping){ sphericalDelta.theta*=(1-this.dampingFactor);
-      sphericalDelta.phi*=(1-this.dampingFactor); panOffset.multiplyScalar(1-this.dampingFactor); }
-    else { sphericalDelta.set(0,0,0); panOffset.set(0,0,0); }
-    scale=1;
-  };
-  domEl.addEventListener('contextmenu',e=>e.preventDefault());
-  domEl.addEventListener('mousedown',function(e){ e.preventDefault();
-    if(e.button===0){state=STATE.ROTATE;rotateStart.set(e.clientX,e.clientY);}
-    if(e.button===1){state=STATE.ZOOM;}
-    if(e.button===2){state=STATE.PAN;panStart.set(e.clientX,e.clientY);} });
-  document.addEventListener('mousemove',function(e){
-    if(state===STATE.ROTATE){ rotateEnd.set(e.clientX,e.clientY); rotateDelta.subVectors(rotateEnd,rotateStart);
-      var el=_this.domEl; rotateLeft(2*Math.PI*rotateDelta.x/el.clientHeight*_this.rotateSpeed);
-      rotateUp(2*Math.PI*rotateDelta.y/el.clientHeight*_this.rotateSpeed); rotateStart.copy(rotateEnd); _this.update(); }
-    else if(state===STATE.PAN){ panEnd.set(e.clientX,e.clientY); panDelta.subVectors(panEnd,panStart);
-      pan(panDelta.x,-panDelta.y); panStart.copy(panEnd); _this.update(); } });
-  document.addEventListener('mouseup',function(){ state=STATE.NONE; });
-  domEl.addEventListener('wheel',function(e){ e.preventDefault();
-    if(e.deltaY<0) scale/=getZoomScale(); else scale*=getZoomScale(); _this.update(); },{passive:false});
-};
-
-// ══════════════════════════════════════════════════════════════════════════
-//  DATA CLEANING  — data_value is sometimes corrupted on write
-//  Recover the leading numeric token, then range-check against physical bounds.
-// ══════════════════════════════════════════════════════════════════════════
-function cleanValue(raw, metric) {
-  let v;
-  if (typeof raw === 'number' && isFinite(raw)) {
-    v = raw;
-  } else {
-    // strip control chars, then grab the first numeric token anywhere in the string
-    const s = String(raw).replace(/[\x00-\x1f]/g, '');
-    const m = s.match(/-?\d+(?:\.\d+)?/);
-    if (!m) return { valid:false, value:null };
-    v = parseFloat(m[0]);
-    if (!isFinite(v)) return { valid:false, value:null };
-  }
-  const [lo, hi] = BOUNDS[metric];
-  return { valid: v >= lo && v <= hi, value: v };
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-//  SENSOR LAYOUT  — parse "X-Y" from the type string, map to a 5×3 grid.
-//  Order (per spec): right→left across width (Y fast), front→back along depth (X).
-// ══════════════════════════════════════════════════════════════════════════
-function gridToXYZ(X, Y) {
-  let d = X - 1, w = Y - 1;                        // 0-based indices
-  if (FLIP_DEPTH) d = (GRID.depth - 1) - d;
-  if (FLIP_WIDTH) w = (GRID.width - 1) - w;
-  return {
-    x: DIMS.L * (d + 1) / (GRID.depth + 1),        // along length (depth)
-    y: DIMS.A * (w + 1) / (GRID.width + 1),        // along width
-    z: SENSOR_Z
-  };
-}
-
-// Model state
-let POSITIONS = [];   // [{key:'X-Y', X,Y, x,y,z, temp:{id,series}, hum:{id,series}, label}]
-let META = { rows:0, corrupted:0, source:'demo', latestByMetric:{temp:null,hum:null} };
-let currentMetric = 'temp';
-let timestamps = { temp:[], hum:[] };  // sorted-asc distinct ms per metric
-let timeIndex  = { temp:0, hum:0 };    // current slider index per metric
-
-// Build POSITIONS from a metadata list [{sensor_id,type}] + readings map.
-// readingsBySensor: { sensor_id: [{t:ms, v:cleanedNumber}] sorted DESC (valid only) }
-function buildModel(metaList, readingsBySensor) {
-  const map = new Map();  // key "X-Y" -> position
-  const typeRe = /^(humedad|temperatura)\s*(\d+)\s*-\s*(\d+)$/i;
-
-  metaList.forEach(row => {
-    const m = String(row.type || '').trim().match(typeRe);
-    if (!m) return;                                    // skip "Exterior", etc.
-    const metric = m[1].toLowerCase().startsWith('t') ? 'temp' : 'hum';
-    const X = +m[2], Y = +m[3];
-    if (X < 1 || X > GRID.depth || Y < 1 || Y > GRID.width) return;  // ignore 16–18 (X=6)
-    const key = `${X}-${Y}`;
-    if (!map.has(key)) {
-      const p = gridToXYZ(X, Y);
-      map.set(key, { key, X, Y, x:p.x, y:p.y, z:p.z,
-                     temp:{id:null,series:[]}, hum:{id:null,series:[]}, label:key });
+// Fallback layout used only if config.json can't be fetched (e.g. file://).
+const FALLBACK_CONFIG = {
+  "_readme": [
+    "Coordenadas en CENTIMETROS, medidas desde la esquina INFERIOR-IZQUIERDA-FRONTAL (0,0,0).",
+    "x = ancho (izquierda->derecha) | y = profundidad (frente->fondo) | z = altura (piso->techo).",
+    "Ej: area x:440,y:1700,z:230 => 4.40m ancho, 17m profundidad, 2.30m alto.",
+    "Ej: sensor x:210,y:125,z:110 => 1.25m adentro, 1.10m de altura, a 2.10m del muro izquierdo.",
+    "Las posiciones de los sensores aqui son PLACEHOLDERS: reemplazalas con tus medidas reales.",
+    "La altura (z) puede diferir por sensor dentro de una misma linea."
+  ],
+  "area": {
+    "x": 440,
+    "y": 1700,
+    "z": 230
+  },
+  "features": [
+    {
+      "name": "Puerta",
+      "type": "door",
+      "x": 220,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "name": "Ventana E",
+      "type": "window",
+      "x": 440,
+      "y": 600,
+      "z": 150
+    },
+    {
+      "name": "Ventana O",
+      "type": "window",
+      "x": 0,
+      "y": 1100,
+      "z": 150
     }
-    const pos = map.get(key);
-    pos[metric].id = row.sensor_id;
-    pos[metric].series = readingsBySensor[row.sensor_id] || [];
+  ],
+  "sensors": [
+    {
+      "sensor_id": 302,
+      "metric": "temp",
+      "label": "Marquesina T1",
+      "line": 1,
+      "pos": 1,
+      "x": 110,
+      "y": 283,
+      "z": 210
+    },
+    {
+      "sensor_id": 301,
+      "metric": "hum",
+      "label": "Marquesina H1",
+      "line": 1,
+      "pos": 1,
+      "x": 110,
+      "y": 283,
+      "z": 210
+    },
+    {
+      "sensor_id": 304,
+      "metric": "temp",
+      "label": "Marquesina T2",
+      "line": 1,
+      "pos": 2,
+      "x": 220,
+      "y": 283,
+      "z": 170
+    },
+    {
+      "sensor_id": 303,
+      "metric": "hum",
+      "label": "Marquesina H2",
+      "line": 1,
+      "pos": 2,
+      "x": 220,
+      "y": 283,
+      "z": 170
+    },
+    {
+      "sensor_id": 306,
+      "metric": "temp",
+      "label": "Marquesina T3",
+      "line": 1,
+      "pos": 3,
+      "x": 330,
+      "y": 283,
+      "z": 195
+    },
+    {
+      "sensor_id": 305,
+      "metric": "hum",
+      "label": "Marquesina H3",
+      "line": 1,
+      "pos": 3,
+      "x": 330,
+      "y": 283,
+      "z": 195
+    },
+    {
+      "sensor_id": 308,
+      "metric": "temp",
+      "label": "Marquesina T4",
+      "line": 2,
+      "pos": 1,
+      "x": 110,
+      "y": 567,
+      "z": 210
+    },
+    {
+      "sensor_id": 307,
+      "metric": "hum",
+      "label": "Marquesina H4",
+      "line": 2,
+      "pos": 1,
+      "x": 110,
+      "y": 567,
+      "z": 210
+    },
+    {
+      "sensor_id": 310,
+      "metric": "temp",
+      "label": "Marquesina T5",
+      "line": 2,
+      "pos": 2,
+      "x": 220,
+      "y": 567,
+      "z": 170
+    },
+    {
+      "sensor_id": 309,
+      "metric": "hum",
+      "label": "Marquesina H5",
+      "line": 2,
+      "pos": 2,
+      "x": 220,
+      "y": 567,
+      "z": 170
+    },
+    {
+      "sensor_id": 312,
+      "metric": "temp",
+      "label": "Marquesina T6",
+      "line": 2,
+      "pos": 3,
+      "x": 330,
+      "y": 567,
+      "z": 195
+    },
+    {
+      "sensor_id": 311,
+      "metric": "hum",
+      "label": "Marquesina H6",
+      "line": 2,
+      "pos": 3,
+      "x": 330,
+      "y": 567,
+      "z": 195
+    },
+    {
+      "sensor_id": 314,
+      "metric": "temp",
+      "label": "Marquesina T7",
+      "line": 3,
+      "pos": 1,
+      "x": 110,
+      "y": 850,
+      "z": 210
+    },
+    {
+      "sensor_id": 313,
+      "metric": "hum",
+      "label": "Marquesina H7",
+      "line": 3,
+      "pos": 1,
+      "x": 110,
+      "y": 850,
+      "z": 210
+    },
+    {
+      "sensor_id": 316,
+      "metric": "temp",
+      "label": "Marquesina T8",
+      "line": 3,
+      "pos": 2,
+      "x": 220,
+      "y": 850,
+      "z": 170
+    },
+    {
+      "sensor_id": 315,
+      "metric": "hum",
+      "label": "Marquesina H8",
+      "line": 3,
+      "pos": 2,
+      "x": 220,
+      "y": 850,
+      "z": 170
+    },
+    {
+      "sensor_id": 318,
+      "metric": "temp",
+      "label": "Marquesina T9",
+      "line": 3,
+      "pos": 3,
+      "x": 330,
+      "y": 850,
+      "z": 195
+    },
+    {
+      "sensor_id": 317,
+      "metric": "hum",
+      "label": "Marquesina H9",
+      "line": 3,
+      "pos": 3,
+      "x": 330,
+      "y": 850,
+      "z": 195
+    },
+    {
+      "sensor_id": 320,
+      "metric": "temp",
+      "label": "Marquesina T10",
+      "line": 4,
+      "pos": 1,
+      "x": 110,
+      "y": 1133,
+      "z": 210
+    },
+    {
+      "sensor_id": 319,
+      "metric": "hum",
+      "label": "Marquesina H10",
+      "line": 4,
+      "pos": 1,
+      "x": 110,
+      "y": 1133,
+      "z": 210
+    },
+    {
+      "sensor_id": 322,
+      "metric": "temp",
+      "label": "Marquesina T11",
+      "line": 4,
+      "pos": 2,
+      "x": 220,
+      "y": 1133,
+      "z": 170
+    },
+    {
+      "sensor_id": 321,
+      "metric": "hum",
+      "label": "Marquesina H11",
+      "line": 4,
+      "pos": 2,
+      "x": 220,
+      "y": 1133,
+      "z": 170
+    },
+    {
+      "sensor_id": 324,
+      "metric": "temp",
+      "label": "Marquesina T12",
+      "line": 4,
+      "pos": 3,
+      "x": 330,
+      "y": 1133,
+      "z": 195
+    },
+    {
+      "sensor_id": 323,
+      "metric": "hum",
+      "label": "Marquesina H12",
+      "line": 4,
+      "pos": 3,
+      "x": 330,
+      "y": 1133,
+      "z": 195
+    },
+    {
+      "sensor_id": 326,
+      "metric": "temp",
+      "label": "Marquesina T13",
+      "line": 5,
+      "pos": 1,
+      "x": 110,
+      "y": 1417,
+      "z": 210
+    },
+    {
+      "sensor_id": 325,
+      "metric": "hum",
+      "label": "Marquesina H13",
+      "line": 5,
+      "pos": 1,
+      "x": 110,
+      "y": 1417,
+      "z": 210
+    },
+    {
+      "sensor_id": 328,
+      "metric": "temp",
+      "label": "Marquesina T14",
+      "line": 5,
+      "pos": 2,
+      "x": 220,
+      "y": 1417,
+      "z": 170
+    },
+    {
+      "sensor_id": 327,
+      "metric": "hum",
+      "label": "Marquesina H14",
+      "line": 5,
+      "pos": 2,
+      "x": 220,
+      "y": 1417,
+      "z": 170
+    },
+    {
+      "sensor_id": 330,
+      "metric": "temp",
+      "label": "Marquesina T15",
+      "line": 5,
+      "pos": 3,
+      "x": 330,
+      "y": 1417,
+      "z": 195
+    },
+    {
+      "sensor_id": 329,
+      "metric": "hum",
+      "label": "Marquesina H15",
+      "line": 5,
+      "pos": 3,
+      "x": 330,
+      "y": 1417,
+      "z": 195
+    }
+  ]
+};
+
+// ── Logo wiring ────────────────────────────────────────────────────────────
+(function(){ const img=document.getElementById('logo'), ph=document.getElementById('logo-ph');
+  img.onerror=()=>{ img.style.display='none'; ph.style.display='flex'; }; img.src=LOGO_URL; })();
+
+// ══════════════════════════════════════════════════════════════════════════
+//  Minimal OrbitControls
+// ══════════════════════════════════════════════════════════════════════════
+THREE.OrbitControls = function(camera, domEl){
+  this.camera=camera; this.domEl=domEl; this.target=new THREE.Vector3();
+  this.enableDamping=true; this.dampingFactor=0.08; this.rotateSpeed=1; this.zoomSpeed=1; this.panSpeed=0.8; this.minDistance=1; this.maxDistance=600;
+  var _this=this, STATE={NONE:-1,ROTATE:0,ZOOM:1,PAN:2}, state=STATE.NONE;
+  var spherical=new THREE.Spherical(), sphericalDelta=new THREE.Spherical(), scale=1, panOffset=new THREE.Vector3();
+  var rotateStart=new THREE.Vector2(),rotateEnd=new THREE.Vector2(),rotateDelta=new THREE.Vector2();
+  var panStart=new THREE.Vector2(),panEnd=new THREE.Vector2(),panDelta=new THREE.Vector2();
+  function zs(){return Math.pow(0.95,_this.zoomSpeed);} function rl(a){sphericalDelta.theta-=a;} function ru(a){sphericalDelta.phi-=a;}
+  var pL=new THREE.Vector3(),pU=new THREE.Vector3();
+  function panLeft(d,m){pL.setFromMatrixColumn(m,0);pL.multiplyScalar(-d);panOffset.add(pL);}
+  function panUp(d,m){pU.setFromMatrixColumn(m,1);pU.multiplyScalar(d);panOffset.add(pU);}
+  function pan(dx,dy){var el=_this.domEl,fov=_this.camera.fov*Math.PI/180,tD=_this.camera.position.distanceTo(_this.target),h=2*Math.tan(fov/2)*tD;
+    panLeft(dx*h/el.clientHeight*_this.panSpeed,_this.camera.matrix); panUp(dy*h/el.clientHeight*_this.panSpeed,_this.camera.matrix);}
+  this.update=function(){var o=new THREE.Vector3(),q=new THREE.Quaternion().setFromUnitVectors(camera.up,new THREE.Vector3(0,1,0)),qi=q.clone().invert();
+    o.copy(this.camera.position).sub(this.target);o.applyQuaternion(q);spherical.setFromVector3(o);
+    spherical.theta+=sphericalDelta.theta;spherical.phi+=sphericalDelta.phi;spherical.phi=Math.max(0.01,Math.min(Math.PI-0.01,spherical.phi));
+    spherical.radius*=scale;spherical.radius=Math.max(this.minDistance,Math.min(this.maxDistance,spherical.radius));
+    this.target.add(panOffset);o.setFromSpherical(spherical);o.applyQuaternion(qi);this.camera.position.copy(this.target).add(o);this.camera.lookAt(this.target);
+    if(this.enableDamping){sphericalDelta.theta*=(1-this.dampingFactor);sphericalDelta.phi*=(1-this.dampingFactor);panOffset.multiplyScalar(1-this.dampingFactor);}
+    else{sphericalDelta.set(0,0,0);panOffset.set(0,0,0);} scale=1;};
+  domEl.addEventListener('contextmenu',e=>e.preventDefault());
+  domEl.addEventListener('mousedown',function(e){e.preventDefault();
+    if(e.button===0){state=STATE.ROTATE;rotateStart.set(e.clientX,e.clientY);} if(e.button===2){state=STATE.PAN;panStart.set(e.clientX,e.clientY);}});
+  document.addEventListener('mousemove',function(e){
+    if(state===STATE.ROTATE){rotateEnd.set(e.clientX,e.clientY);rotateDelta.subVectors(rotateEnd,rotateStart);var el=_this.domEl;
+      rl(2*Math.PI*rotateDelta.x/el.clientHeight*_this.rotateSpeed);ru(2*Math.PI*rotateDelta.y/el.clientHeight*_this.rotateSpeed);rotateStart.copy(rotateEnd);_this.update();}
+    else if(state===STATE.PAN){panEnd.set(e.clientX,e.clientY);panDelta.subVectors(panEnd,panStart);pan(panDelta.x,-panDelta.y);panStart.copy(panEnd);_this.update();}});
+  document.addEventListener('mouseup',function(){state=STATE.NONE;});
+  domEl.addEventListener('wheel',function(e){e.preventDefault(); if(e.deltaY<0)scale/=zs();else scale*=zs();_this.update();},{passive:false});
+};
+
+// ══════════════════════════════════════════════════════════════════════════
+//  DATA CLEANING  (data_value is sometimes corrupted on write)
+// ══════════════════════════════════════════════════════════════════════════
+function cleanValue(raw, metric){
+  let v;
+  if(typeof raw==='number' && isFinite(raw)) v=raw;
+  else{ const s=String(raw).replace(/[\x00-\x1f]/g,''); const m=s.match(/-?\d+(?:\.\d+)?/);
+        if(!m) return {valid:false,value:null}; v=parseFloat(m[0]); if(!isFinite(v)) return {valid:false,value:null}; }
+  const [lo,hi]=BOUNDS[metric]; return {valid:v>=lo&&v<=hi, value:v};
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  MODEL
+// ══════════════════════════════════════════════════════════════════════════
+let CONFIG=null;
+let SENSORS=[];                         // [{sensor_id,metric,label,cm:{x,y,z},w:{x,y,z},series[]}]
+let META={rows:0,corrupted:0,mapped:0,source:'demo'};
+let currentMetric='temp';
+let timestamps={temp:[],hum:[]};
+let timeIndex={temp:0,hum:0};
+
+function buildModel(cfg, readingsBySensor, metricFromDb){
+  SENSORS=[];
+  (cfg.sensors||[]).forEach(cs=>{
+    const metric = cs.metric || metricFromDb[cs.sensor_id];
+    if(metric!=='temp' && metric!=='hum') return;
+    const p={x:+cs.x,y:+cs.y,z:+cs.z};
+    SENSORS.push({ sensor_id:cs.sensor_id, metric, label:cs.label||('S'+cs.sensor_id),
+                   line:cs.line, pos:cs.pos, cm:p, w:toWorld(p),
+                   series: readingsBySensor[cs.sensor_id] || [] });
   });
-
-  // stable order: front→back, then right→left (matches sensor numbering 1..15)
-  POSITIONS = [...map.values()].sort((a,b) => (a.X - b.X) || (a.Y - b.Y));
-
-  // distinct timestamps per metric
-  ['temp','hum'].forEach(metric => {
-    const set = new Set();
-    POSITIONS.forEach(p => p[metric].series.forEach(r => set.add(r.t)));
-    timestamps[metric] = [...set].sort((a,b) => a - b);
-    timeIndex[metric] = Math.max(0, timestamps[metric].length - 1);   // default: latest
+  ['temp','hum'].forEach(metric=>{
+    const set=new Set();
+    SENSORS.filter(s=>s.metric===metric).forEach(s=>s.series.forEach(r=>set.add(r.t)));
+    timestamps[metric]=[...set].sort((a,b)=>a-b);
+    timeIndex[metric]=Math.max(0,timestamps[metric].length-1);   // default latest
   });
+  META.mapped=SENSORS.length;
 }
 
-// value for a position at (or before) a target time, with fallback to nearest valid
-function valueAsOf(series, targetMs) {
-  for (let i = 0; i < series.length; i++) {         // series is DESC by time
-    if (series[i].t <= targetMs) return series[i].v;
-  }
-  return series.length ? series[series.length - 1].v : null;  // nothing ≤ T → oldest valid
+function valueAsOf(series, T){
+  for(let i=0;i<series.length;i++) if(series[i].t<=T) return series[i].v;   // DESC
+  return series.length ? series[series.length-1].v : null;
 }
-
-// snapshot of the current metric at the current slider time -> [{pos, value|null}]
-function currentSnapshot() {
-  const ts = timestamps[currentMetric];
-  const targetMs = ts.length ? ts[Math.min(timeIndex[currentMetric], ts.length-1)] : Infinity;
-  return POSITIONS.map(p => ({ pos:p, value: valueAsOf(p[currentMetric].series, targetMs) }));
-}
+function activeSensors(){ return SENSORS.filter(s=>s.metric===currentMetric); }
+function currentTargetMs(){ const ts=timestamps[currentMetric];
+  return ts.length ? ts[Math.min(timeIndex[currentMetric],ts.length-1)] : Infinity; }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  RBF INTERPOLATION (thin-plate)
+//  RBF (thin-plate) + color
 // ══════════════════════════════════════════════════════════════════════════
-function buildRBF(pts, vals) {
-  const n = pts.length;
-  const phi = r2 => r2 > 0 ? r2 * Math.log(Math.sqrt(r2) + 1e-15) : 0;
-  const mat = [];
-  for (let i=0;i<n;i++){ mat[i]=[];
-    for(let j=0;j<n;j++){ const dx=pts[i][0]-pts[j][0],dy=pts[i][1]-pts[j][1],dz=pts[i][2]-pts[j][2];
-      mat[i][j]=phi(dx*dx+dy*dy+dz*dz); } mat[i][n]=vals[i]; }
-  for(let col=0;col<n;col++){ let piv=col;
-    for(let r=col+1;r<n;r++) if(Math.abs(mat[r][col])>Math.abs(mat[piv][col])) piv=r;
-    [mat[col],mat[piv]]=[mat[piv],mat[col]]; const pc=mat[col][col];
-    if(Math.abs(pc)<1e-12) continue;
-    for(let c=col;c<=n;c++) mat[col][c]/=pc;
-    for(let r=0;r<n;r++){ if(r===col) continue; const f=mat[r][col];
-      for(let c=col;c<=n;c++) mat[r][c]-=f*mat[col][c]; } }
-  const w = mat.map(r=>r[n]);
-  return (qx,qy,qz)=>{ let v=0;
-    for(let i=0;i<n;i++){ const dx=qx-pts[i][0],dy=qy-pts[i][1],dz=qz-pts[i][2];
-      v+=w[i]*phi(dx*dx+dy*dy+dz*dz); } return v; };
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-//  COLOR MAPPING
-// ══════════════════════════════════════════════════════════════════════════
-const COLOR_STOPS = [
-  [0.000,[26,111,255]],[0.250,[0,212,255]],[0.500,[0,255,136]],
-  [0.750,[255,204,0]],[0.875,[255,107,53]],[1.000,[255,45,45]],
-];
-function valToRgb(t,vMin,vMax){
-  const u=vMax>vMin?Math.max(0,Math.min(1,(t-vMin)/(vMax-vMin))):0.5;
-  for(let i=0;i<COLOR_STOPS.length-1;i++){ const [t0,c0]=COLOR_STOPS[i],[t1,c1]=COLOR_STOPS[i+1];
-    if(u<=t1){ const f=(u-t0)/(t1-t0); return c0.map((v,j)=>Math.round(v+f*(c1[j]-v))); } }
-  return COLOR_STOPS[COLOR_STOPS.length-1][1];
-}
-const cssRgb   = rgb => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
-const threeRgb = rgb => new THREE.Color(rgb[0]/255,rgb[1]/255,rgb[2]/255);
+function buildRBF(pts,vals){ const n=pts.length; const phi=r2=>r2>0?r2*Math.log(Math.sqrt(r2)+1e-15):0; const mat=[];
+  for(let i=0;i<n;i++){mat[i]=[];for(let j=0;j<n;j++){const dx=pts[i][0]-pts[j][0],dy=pts[i][1]-pts[j][1],dz=pts[i][2]-pts[j][2];mat[i][j]=phi(dx*dx+dy*dy+dz*dz);}mat[i][n]=vals[i];}
+  for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(mat[r][c])>Math.abs(mat[p][c]))p=r;[mat[c],mat[p]]=[mat[p],mat[c]];const pc=mat[c][c];if(Math.abs(pc)<1e-12)continue;
+    for(let k=c;k<=n;k++)mat[c][k]/=pc;for(let r=0;r<n;r++){if(r===c)continue;const f=mat[r][c];for(let k=c;k<=n;k++)mat[r][k]-=f*mat[c][k];}}
+  const w=mat.map(r=>r[n]); return (qx,qy,qz)=>{let v=0;for(let i=0;i<n;i++){const dx=qx-pts[i][0],dy=qy-pts[i][1],dz=qz-pts[i][2];v+=w[i]*phi(dx*dx+dy*dy+dz*dz);}return v;};}
+const COLOR_STOPS=[[0,[26,111,255]],[.25,[0,212,255]],[.5,[0,255,136]],[.75,[255,204,0]],[.875,[255,107,53]],[1,[255,45,45]]];
+function valToRgb(t,vMin,vMax){const u=vMax>vMin?Math.max(0,Math.min(1,(t-vMin)/(vMax-vMin))):0.5;
+  for(let i=0;i<COLOR_STOPS.length-1;i++){const[t0,c0]=COLOR_STOPS[i],[t1,c1]=COLOR_STOPS[i+1];if(u<=t1){const f=(u-t0)/(t1-t0);return c0.map((v,j)=>Math.round(v+f*(c1[j]-v)));}}return COLOR_STOPS[5][1];}
+const cssRgb=r=>`rgb(${r[0]},${r[1]},${r[2]})`; const threeRgb=r=>new THREE.Color(r[0]/255,r[1]/255,r[2]/255);
 
 // ══════════════════════════════════════════════════════════════════════════
 //  THREE.JS SETUP
 // ══════════════════════════════════════════════════════════════════════════
 const canvas=document.getElementById('three-canvas'), wrap=document.getElementById('canvas-wrap');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-renderer.setClearColor(0x080c10,1);
-const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(45,1,0.1,600);
-camera.position.set(DIMS.L/2, DIMS.H+9, DIMS.A+16);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2)); renderer.setClearColor(0x080c10,1);
+const scene=new THREE.Scene(); const camera=new THREE.PerspectiveCamera(45,1,0.1,2000);
 const controls=new THREE.OrbitControls(camera,canvas);
-controls.target.set(DIMS.L/2,DIMS.H/2,DIMS.A/2);
-camera.lookAt(controls.target); controls.update();
-scene.add(new THREE.AmbientLight(0xffffff,0.75));
-const dLight=new THREE.DirectionalLight(0xffffff,0.5); dLight.position.set(20,30,20); scene.add(dLight);
+scene.add(new THREE.AmbientLight(0xffffff,0.8));
+const dl=new THREE.DirectionalLight(0xffffff,0.5); dl.position.set(20,40,20); scene.add(dl);
+const gBox=new THREE.Group(),gAxis=new THREE.Group(),gFeat=new THREE.Group(),gVol=new THREE.Group(),gPts=new THREE.Group(),gLabels=new THREE.Group();
+scene.add(gBox,gAxis,gFeat,gVol,gPts,gLabels);
+let volOpacity=0.40, ptsSizeFactor=1.0, rbfFn=null, snapVals=[];
 
-const gBox=new THREE.Group(), gSurf=new THREE.Group(), gVol=new THREE.Group(),
-      gPts=new THREE.Group(), gLabels=new THREE.Group(), gAxis=new THREE.Group();
-scene.add(gBox,gSurf,gVol,gPts,gLabels,gAxis);
+function BOX(){ const a=CONFIG.area; return { W:cm(a.x), H:cm(a.z), D:cm(a.y) }; } // W=width(X) H=height(Y) D=depth(Z)
 
-let volOpacity=0.55, ptsSizeFactor=1.0, rbfFn=null;
-let snapVals=[];   // parallel to POSITIONS, cleaned numbers or null (current metric+time)
+function frameCamera(){ const {W,H,D}=BOX(); const cx=W/2,cy=H/2,cz=D/2; const maxd=Math.max(W,H,D);
+  controls.target.set(cx,cy,cz); camera.position.set(cx+W*0.6+maxd*0.15, H+maxd*0.28, -(maxd*0.55)); camera.lookAt(cx,cy,cz); controls.update(); }
+function resetView(){ const {W,H,D}=BOX(); const cx=W/2,cy=H/2,cz=D/2; controls.target.set(cx,cy,cz);
+  camera.position.set(cx, cy+0.4, -(Math.max(W,H,D)*1.35+D*0.3)); camera.lookAt(cx,cy,cz); controls.update(); }
 
-// ── Wireframe box + orientation labels ────────────────────────────────────
-function buildBox(){
-  gBox.clear(); gAxis.clear();
-  const {L,A,H}=DIMS;
-  const mat=new THREE.LineBasicMaterial({color:0x24455a});
-  const v=[[0,0,0],[L,0,0],[L,H,0],[0,H,0],[0,0,A],[L,0,A],[L,H,A],[0,H,A]];
+function sprite(text,colorStr,scaleX,scaleY,fs){ const c=document.createElement('canvas'); c.width=128; c.height=44; const ctx=c.getContext('2d');
+  ctx.fillStyle='rgba(8,12,16,0.88)';ctx.beginPath();ctx.roundRect(0,0,128,44,7);ctx.fill();
+  ctx.strokeStyle=colorStr;ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(0,0,128,44,7);ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font=`bold ${fs||16}px Montserrat, sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,64,22);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));sp.scale.set(scaleX||1.7,scaleY||0.58,1);return sp;}
+function tag(text,x,y,z,color){ const c=document.createElement('canvas');c.width=128;c.height=40;const ctx=c.getContext('2d');
+  ctx.fillStyle=color;ctx.font='bold 22px Montserrat, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,64,20);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));sp.position.set(x,y,z);sp.scale.set(2.4,0.75,1);gAxis.add(sp);}
+
+function buildStatic(){
+  gBox.clear();gAxis.clear();gFeat.clear();
+  const {W,H,D}=BOX(); const mat=new THREE.LineBasicMaterial({color:0x24455a});
+  const v=[[0,0,0],[W,0,0],[W,H,0],[0,H,0],[0,0,D],[W,0,D],[W,H,D],[0,H,D]];
   [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]].forEach(([a,b])=>{
-    const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...v[a]),new THREE.Vector3(...v[b])]);
-    gBox.add(new THREE.Line(geo,mat)); });
-  const grid=new THREE.GridHelper(Math.max(L,A),Math.round(Math.max(L,A)),0x14202a,0x14202a);
-  grid.position.set(L/2,0,A/2); gBox.add(grid);
-
-  // orientation tags (respect the FLIP_* switches so they always tell the truth)
-  const frontZ = FLIP_DEPTH ? A : 0,  backZ  = FLIP_DEPTH ? 0 : A;   // depth runs along Z here
-  const rightX = FLIP_WIDTH ? L : 0,  leftX  = FLIP_WIDTH ? 0 : L;   // width runs along X here
-  // NOTE: three-space maps (x,z,y): sensor-depth→worldX, sensor-width→worldZ.
-  addTag('FRENTE', DIMS.L/2, 0.3, (FLIP_DEPTH? DIMS.A:0), '#7fd6ef');
-  addTag('ATRÁS',  DIMS.L/2, 0.3, (FLIP_DEPTH? 0:DIMS.A), '#7a96a3');
-  addTag('DER.',   (FLIP_WIDTH? DIMS.L:0), 0.3, DIMS.A/2, '#7a96a3');
-  addTag('IZQ.',   (FLIP_WIDTH? 0:DIMS.L), 0.3, DIMS.A/2, '#7a96a3');
-}
-function addTag(text,x,y,z,color){
-  const c=document.createElement('canvas'); c.width=120; c.height=36;
-  const ctx=c.getContext('2d'); ctx.fillStyle=color; ctx.font='bold 22px Montserrat, sans-serif';
-  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(text,60,18);
-  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));
-  sp.position.set(x,y,z); sp.scale.set(2.4,0.72,1); gAxis.add(sp);
+    gBox.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...v[a]),new THREE.Vector3(...v[b])]),mat));});
+  const grid=new THREE.GridHelper(Math.max(W,D),Math.round(Math.max(W,D)),0x14202a,0x14202a); grid.position.set(W/2,0,D/2); gBox.add(grid);
+  tag('FRENTE',W/2,0.25,0,'#7fd6ef'); tag('ATRÁS',W/2,0.25,D,'#7a96a3');
+  tag('IZQ.',0,0.25,D/2,'#7a96a3');   tag('DER.',W,0.25,D/2,'#7a96a3');
+  (CONFIG.features||[]).forEach(f=>{
+    const w=toWorld(f); const isDoor=(f.type==='door'); const col=isDoor?0xc1663a:0x3fa7c9;
+    const geo=isDoor?new THREE.BoxGeometry(0.9,1.9,0.12):new THREE.BoxGeometry(0.8,0.8,0.12);
+    const mesh=new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color:col,transparent:true,opacity:0.55,emissive:col,emissiveIntensity:0.2}));
+    mesh.position.set(w.x, isDoor?(w.y+0.95):w.y, w.z); gFeat.add(mesh);
+    const lp=sprite(f.name, isDoor?'#e0975f':'#7fd0e6',1.9,0.6,15); lp.position.set(w.x,(isDoor?w.y+2.05:w.y+0.7),w.z); gFeat.add(lp);
+  });
 }
 
-// ── Interpolated heat FIELD as a horizontal surface at sensor height ───────
-function buildSurface(vMin,vMax){
-  gSurf.clear(); if(!rbfFn) return;
-  const nx=48, nz=24;   // resolution across L (x) and A (z)
-  const geo=new THREE.BufferGeometry();
-  const pos=[], col=[], idx=[];
-  for(let iz=0;iz<=nz;iz++) for(let ix=0;ix<=nx;ix++){
-    const x=ix*DIMS.L/nx, z=iz*DIMS.A/nz;
-    const val=rbfFn(x,SENSOR_Z,z);
-    const rgb=valToRgb(val,vMin,vMax);
-    pos.push(x,SENSOR_Z,z); col.push(rgb[0]/255,rgb[1]/255,rgb[2]/255);
-  }
-  const w=nx+1;
-  for(let iz=0;iz<nz;iz++) for(let ix=0;ix<nx;ix++){
-    const a=iz*w+ix,b=a+1,c=a+w,d=c+1; idx.push(a,c,b, b,c,d);
-  }
-  geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
-  geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
-  geo.setIndex(idx); geo.computeVertexNormals();
-  const mat=new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide,
-    transparent:true,opacity:volOpacity,depthWrite:false});
-  gSurf.add(new THREE.Mesh(geo,mat));
+function applyState(){
+  const act=activeSensors(); const T=currentTargetMs();
+  snapVals=act.map(s=>valueAsOf(s.series,T));
+  const valid=[]; act.forEach((s,i)=>{ if(snapVals[i]!=null) valid.push({s,v:snapVals[i]}); });
+  let vMin=0,vMax=1;
+  if(valid.length){ vMin=Math.min(...valid.map(o=>o.v)); vMax=Math.max(...valid.map(o=>o.v)); if(vMin===vMax){vMin-=1;vMax+=1;} }
+  rbfFn = valid.length>=4 ? buildRBF(valid.map(o=>[o.s.w.x,o.s.w.y,o.s.w.z]), valid.map(o=>o.v)) : null;
+  buildField(vMin,vMax); buildPoints(act,vMin,vMax); buildLabels(act,vMin,vMax); updateUI(act,valid,vMin,vMax,T);
 }
 
-// ── Optional thin volumetric slab (point cloud) around the sensor plane ────
-function buildVolume(vMin,vMax){
+function buildField(vMin,vMax){
   gVol.clear(); if(!rbfFn) return;
-  const nx=26, nz=16, ny=5, halfH=0.7;
-  const pos=[], col=[];
-  for(let ix=0;ix<nx;ix++) for(let iz=0;iz<nz;iz++) for(let iy=0;iy<ny;iy++){
-    const x=ix*DIMS.L/(nx-1), z=iz*DIMS.A/(nz-1);
-    const y=SENSOR_Z-halfH + iy*(2*halfH)/(ny-1);
-    const val=rbfFn(x,y,z); const rgb=valToRgb(val,vMin,vMax);
-    pos.push(x,y,z); col.push(rgb[0]/255,rgb[1]/255,rgb[2]/255);
-  }
+  const {W,H,D}=BOX(); const nx=12,ny=9,nz=Math.max(12,Math.round(D*2.2));
+  const pos=[],col=[];
+  for(let ix=0;ix<nx;ix++)for(let iy=0;iy<ny;iy++)for(let iz=0;iz<nz;iz++){
+    const x=ix*W/(nx-1),y=iy*H/(ny-1),z=iz*D/(nz-1); const val=rbfFn(x,y,z); const rgb=valToRgb(val,vMin,vMax);
+    pos.push(x,y,z);col.push(rgb[0]/255,rgb[1]/255,rgb[2]/255);}
   const geo=new THREE.BufferGeometry();
-  geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
-  geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
-  const mat=new THREE.PointsMaterial({size:0.5,vertexColors:true,transparent:true,
-    opacity:volOpacity*0.7,sizeAttenuation:true,depthWrite:false});
-  gVol.add(new THREE.Points(geo,mat));
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+  gVol.add(new THREE.Points(geo,new THREE.PointsMaterial({size:0.45,vertexColors:true,transparent:true,opacity:volOpacity,sizeAttenuation:true,depthWrite:false})));
 }
-
-// ── Sensor spheres + halo rings ───────────────────────────────────────────
-function buildPoints(vMin,vMax){
+function buildPoints(act,vMin,vMax){
   gPts.clear();
-  POSITIONS.forEach((p,i)=>{
-    const val=snapVals[i];
-    const has=val!=null;
-    const rgb=has?valToRgb(val,vMin,vMax):[130,150,160];
-    const color=threeRgb(rgb);
-    const geo=new THREE.SphereGeometry(0.2,14,14);
-    const matS=new THREE.MeshPhongMaterial({color,emissive:color,emissiveIntensity:has?0.35:0.05,
-      transparent:!has,opacity:has?1:0.5});
-    const mesh=new THREE.Mesh(geo,matS);
-    mesh.position.set(p.x,p.z,p.y);
-    mesh.userData={idx:i,val,has,pos:p};
-    mesh.scale.setScalar(ptsSizeFactor); gPts.add(mesh);
-    const ring=new THREE.Mesh(new THREE.RingGeometry(0.26,0.36,22),
-      new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,transparent:true,opacity:0.45,depthWrite:false}));
-    ring.position.set(p.x,p.z,p.y); ring.userData={isRing:true}; gPts.add(ring);
-  });
+  act.forEach((s,i)=>{ const val=snapVals[i],has=val!=null; const rgb=has?valToRgb(val,vMin,vMax):[130,150,160]; const color=threeRgb(rgb);
+    const mesh=new THREE.Mesh(new THREE.SphereGeometry(0.16,14,14),new THREE.MeshPhongMaterial({color,emissive:color,emissiveIntensity:has?0.35:0.05,transparent:!has,opacity:has?1:0.5}));
+    mesh.position.set(s.w.x,s.w.y,s.w.z); mesh.userData={idx:i,val,has,s}; mesh.scale.setScalar(ptsSizeFactor); gPts.add(mesh);
+    const ring=new THREE.Mesh(new THREE.RingGeometry(0.21,0.30,22),new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,transparent:true,opacity:0.45,depthWrite:false}));
+    ring.position.set(s.w.x,s.w.y,s.w.z); ring.userData={isRing:true}; gPts.add(ring);});
 }
-
-// ── Value labels ──────────────────────────────────────────────────────────
-function makeLabel(text,colorStr){
-  const c=document.createElement('canvas'); c.width=120; c.height=40;
-  const ctx=c.getContext('2d');
-  ctx.fillStyle='rgba(8,12,16,0.88)'; ctx.beginPath(); ctx.roundRect(0,0,120,40,6); ctx.fill();
-  ctx.strokeStyle=colorStr; ctx.lineWidth=1.5; ctx.beginPath(); ctx.roundRect(0,0,120,40,6); ctx.stroke();
-  ctx.fillStyle='#fff'; ctx.font='bold 16px Montserrat, sans-serif';
-  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(text,60,20);
-  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));
-  sp.scale.set(1.7,0.57,1); return sp;
-}
-function buildLabels(vMin,vMax){
+function buildLabels(act,vMin,vMax){
   gLabels.clear(); const unit=METRIC_UNIT[currentMetric];
-  POSITIONS.forEach((p,i)=>{
-    const val=snapVals[i]; const has=val!=null;
-    const rgb=has?valToRgb(val,vMin,vMax):[130,150,160];
-    const txt=has?`${val.toFixed(1)}${unit}`:'s/d';
-    const sp=makeLabel(txt,cssRgb(rgb)); sp.position.set(p.x,p.z+0.45,p.y); gLabels.add(sp);
-  });
+  act.forEach((s,i)=>{ const val=snapVals[i],has=val!=null; const rgb=has?valToRgb(val,vMin,vMax):[130,150,160];
+    const sp=sprite(has?`${val.toFixed(1)}${unit}`:'s/d',cssRgb(rgb),1.5,0.5,16); sp.position.set(s.w.x,s.w.y+0.4,s.w.z); gLabels.add(sp);});
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  UI  — stats, sensor list, header, scale
+//  UI
 // ══════════════════════════════════════════════════════════════════════════
 const $=id=>document.getElementById(id);
 function fmtDate(ms){ if(ms==null||!isFinite(ms)) return '—';
-  const d=new Date(ms);
-  return d.toLocaleString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+  return new Date(ms).toLocaleString('es-CO',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
 
-function updateUI(vMin,vMax){
-  const unit=METRIC_UNIT[currentMetric];
-  const vals=snapVals.filter(v=>v!=null);
+function updateUI(act,valid,vMin,vMax,T){
+  const unit=METRIC_UNIT[currentMetric]; const vals=valid.map(o=>o.v);
   const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;
   const std=vals.length?Math.sqrt(vals.reduce((a,b)=>a+(b-avg)**2,0)/vals.length):0;
 
-  $('scale-title').textContent = 'Escala de '+METRIC_NAME[currentMetric];
-  $('scale-unit').textContent = unit;
-  $('t-min').textContent = vals.length?vMin.toFixed(1):'—';
-  $('t-max').textContent = vals.length?vMax.toFixed(1):'—';
+  $('scale-title').textContent='Escala de '+METRIC_NAME[currentMetric]; $('scale-unit').textContent=unit;
+  $('t-min').textContent=vals.length?vMin.toFixed(1):'—'; $('t-max').textContent=vals.length?vMax.toFixed(1):'—';
   ['u-min','u-max','u-avg','u-std'].forEach(id=>$(id).textContent=unit);
-  $('s-min').innerHTML = `${vals.length?vMin.toFixed(1):'—'}<sup>${unit}</sup>`;
-  $('s-max').innerHTML = `${vals.length?vMax.toFixed(1):'—'}<sup>${unit}</sup>`;
-  $('s-avg').innerHTML = `${vals.length?avg.toFixed(1):'—'}<sup>${unit}</sup>`;
-  $('s-std').innerHTML = `${vals.length?std.toFixed(2):'—'}<sup>${unit}</sup>`;
+  $('s-min').innerHTML=`${vals.length?vMin.toFixed(1):'—'}<sup>${unit}</sup>`;
+  $('s-max').innerHTML=`${vals.length?vMax.toFixed(1):'—'}<sup>${unit}</sup>`;
+  $('s-avg').innerHTML=`${vals.length?avg.toFixed(1):'—'}<sup>${unit}</sup>`;
+  $('s-std').innerHTML=`${vals.length?std.toFixed(2):'—'}<sup>${unit}</sup>`;
 
-  // header
-  $('hdr-dims').innerHTML = `<strong>${DIMS.L}</strong>m L × <strong>${DIMS.A}</strong>m A × <strong>${DIMS.H}</strong>m H`;
-  $('hdr-count').textContent = POSITIONS.length;
-  const srcEl=$('hdr-source');
-  if(META.source==='db'){ srcEl.className='badge live'; srcEl.textContent='DB EN VIVO'; }
-  else { srcEl.className='badge demo'; srcEl.textContent='DEMO (SIN DB)'; }
-  const ts=timestamps[currentMetric];
-  const snapMs = ts.length? ts[Math.min(timeIndex[currentMetric],ts.length-1)] : null;
-  $('hdr-snapshot').textContent = `Instante: ${fmtDate(snapMs)} · ${METRIC_NAME[currentMetric]}`;
+  const {W,H,D}=BOX();
+  $('hdr-dims').innerHTML=`<strong>${W.toFixed(2)}</strong>×<strong>${D.toFixed(2)}</strong>×<strong>${H.toFixed(2)}</strong> m`;
+  $('hdr-count').textContent=act.length;
+  const src=$('hdr-source'); if(META.source==='db'){src.className='badge live';src.textContent='DB EN VIVO';}else{src.className='badge demo';src.textContent='DEMO (SIN DB)';}
+  const snapMs = timestamps[currentMetric].length ? T : null;
+  $('hdr-snapshot').textContent=`Instante: ${fmtDate(snapMs)}`;
+  $('time-readout').textContent=fmtDate(snapMs);
 
-  // time slider
-  const sl=$('sl-time'); sl.max=Math.max(0,ts.length-1); sl.value=timeIndex[currentMetric];
-  $('time-readout').textContent = fmtDate(snapMs);
-  $('time-sub').textContent = ts.length? `${ts.length} lecturas en el histórico · fin = último dato`
-                                       : 'Sin histórico disponible';
+  const ts=timestamps[currentMetric]; const sl=$('sl-time');
+  sl.max=Math.max(0,ts.length-1); sl.value=Math.min(timeIndex[currentMetric],Math.max(0,ts.length-1));
+  $('time-sub').textContent=ts.length?`${ts.length} lecturas · ${METRIC_NAME[currentMetric]} · fin = último dato`:'Sin histórico';
 
-  // sensor list
   const list=$('sensor-list'); list.innerHTML='';
-  POSITIONS.forEach((p,i)=>{
-    const val=snapVals[i]; const has=val!=null;
-    const rgb=has?valToRgb(val,vMin,vMax):[130,150,160];
-    const row=document.createElement('div');
-    row.className='sensor-row'+(has?'':' stale'); row.dataset.idx=i;
-    row.innerHTML=`
-      <span class="sensor-dot" style="background:${cssRgb(rgb)}"></span>
-      <span class="sensor-id">S${String(i+1).padStart(2,'0')}</span>
-      <span class="sensor-pos">${p.key}</span>
-      <span class="sensor-val">${has?val.toFixed(1)+METRIC_UNIT[currentMetric]:'s/d'}</span>`;
-    row.addEventListener('click',()=>{
-      document.querySelectorAll('.sensor-row').forEach(r=>r.classList.remove('active'));
-      row.classList.add('active');
-      controls.target.set(p.x,p.z,p.y);
-      camera.position.set(p.x+7,p.z+5,p.y+7); controls.update();
-    });
-    list.appendChild(row);
-  });
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-//  REBUILD everything for the current metric + time
-// ══════════════════════════════════════════════════════════════════════════
-function rebuild(){
-  const snap=currentSnapshot();
-  snapVals=snap.map(s=>s.value);
-  const valid=snap.filter(s=>s.value!=null);
-  let vMin=0,vMax=1;
-  if(valid.length){ vMin=Math.min(...valid.map(s=>s.value)); vMax=Math.max(...valid.map(s=>s.value));
-    if(vMin===vMax){ vMin-=1; vMax+=1; } }
-
-  // RBF over valid points only
-  if(valid.length>=3){
-    const pts=valid.map(s=>[s.pos.x,s.pos.z,s.pos.y]);
-    rbfFn=buildRBF(pts, valid.map(s=>s.value));
-  } else rbfFn=null;
-
-  buildBox();
-  buildSurface(vMin,vMax);
-  buildVolume(vMin,vMax);
-  buildPoints(vMin,vMax);
-  buildLabels(vMin,vMax);
-  updateUI(vMin,vMax);
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-//  DATABASE LOADING (sql.js / WASM) — reads datos_sensores.db in the browser
-// ══════════════════════════════════════════════════════════════════════════
-async function loadFromDB(){
-  showOverlay('Cargando base de datos…','',false);
-  const SQL = await initSqlJs({ locateFile: f => SQLJS_BASE + f });
-  const resp = await fetch(DB_PATH, { cache:'no-store' });
-  if(!resp.ok) throw new Error(`No se pudo leer ${DB_PATH} (HTTP ${resp.status})`);
-  const buf = new Uint8Array(await resp.arrayBuffer());
-  const db  = new SQL.Database(buf);
-
-  // 1) metadata for marquesina sensors
-  const metaRes = db.exec(
-    `SELECT sensor_id, type FROM sensor
-     WHERE module_id = '${MODULE_ID}' AND is_active = 1`);
-  const metaList = [];
-  if(metaRes.length){
-    for(const r of metaRes[0].values) metaList.push({ sensor_id:r[0], type:r[1] });
-  }
-
-  // keep only the ids we care about (parse happens again in buildModel, this just narrows the read)
-  const keepIds = new Set();
-  const typeRe = /^(humedad|temperatura)\s*(\d+)\s*-\s*(\d+)$/i;
-  metaList.forEach(row=>{ const m=String(row.type||'').trim().match(typeRe);
-    if(m){ const X=+m[2],Y=+m[3]; if(X>=1&&X<=GRID.depth&&Y>=1&&Y<=GRID.width){
-      const metric=m[1].toLowerCase().startsWith('t')?'temp':'hum';
-      row._metric=metric; keepIds.add(row.sensor_id); } } });
-
-  // 2) all readings for those sensors (cleaned client-side)
-  const idList=[...keepIds].join(',');
-  const dataRes = db.exec(
-    `SELECT sensor_id, measure_date, data_value FROM sensor_data
-     WHERE sensor_id IN (${idList})`);
-
-  const metricById = {}; metaList.forEach(r=>{ if(r._metric) metricById[r.sensor_id]=r._metric; });
-  const readingsBySensor={}; let total=0, corrupted=0;
-  if(dataRes.length){
-    for(const r of dataRes[0].values){
-      const sid=r[0], dateStr=r[1], raw=r[2];
-      total++;
-      const metric=metricById[sid]; if(!metric) continue;
-      const c=cleanValue(raw, metric);
-      const wasCorrupt = (typeof raw!=='number') || !c.valid;
-      if(wasCorrupt) corrupted++;
-      if(!c.valid) continue;                              // drop unusable readings
-      const t=Date.parse(String(dateStr).replace(' ','T')+'Z'); // stored UTC-naive
-      if(isNaN(t)) continue;
-      (readingsBySensor[sid]=readingsBySensor[sid]||[]).push({t,v:c.value});
-    }
-  }
-  Object.values(readingsBySensor).forEach(a=>a.sort((x,y)=>y.t-x.t)); // DESC
-  db.close();
-
-  META={ rows:total, corrupted, source:'db' };
-  buildModel(metaList, readingsBySensor);
-  if(!POSITIONS.length) throw new Error('No se encontraron sensores de marquesina (1–15).');
-  currentMetric='temp'; setMetricButtons();
-  rebuild();
-  writeStatus();
-  hideOverlay();
-}
-
-// Fallback: build the model from the embedded DEMO snapshot
-function loadDemo(reason){
-  const now=Date.now();
-  const metaList=[]; const readingsBySensor={};
-  let sid=1;
-  for(let X=1;X<=GRID.depth;X++) for(let Y=1;Y<=GRID.width;Y++){
-    const key=`${X}-${Y}`;
-    const tId=sid++, hId=sid++;
-    metaList.push({sensor_id:tId,type:`Temperatura ${key}`});
-    metaList.push({sensor_id:hId,type:`Humedad ${key}`});
-    readingsBySensor[tId]=[{t:now,v:DEMO.temp[key]}];
-    readingsBySensor[hId]=[{t:now,v:DEMO.hum[key]}];
-  }
-  META={rows:30,corrupted:0,source:'demo'};
-  buildModel(metaList, readingsBySensor);
-  currentMetric='temp'; setMetricButtons(); rebuild(); writeStatus(reason);
-  hideOverlay();
+  act.forEach((s,i)=>{ const val=snapVals[i],has=val!=null; const rgb=has?valToRgb(val,vMin,vMax):[130,150,160];
+    const row=document.createElement('div'); row.className='sensor-row'+(has?'':' stale'); row.dataset.idx=i;
+    row.innerHTML=`<span class="sensor-dot" style="background:${cssRgb(rgb)}"></span>
+      <span class="sensor-id">${s.label.replace('Marquesina ','')}</span>
+      <span class="sensor-pos">L${s.line||'?'}·${s.pos||'?'}</span>
+      <span class="sensor-val">${has?val.toFixed(1)+unit:'s/d'}</span>`;
+    row.addEventListener('click',()=>{document.querySelectorAll('.sensor-row').forEach(r=>r.classList.remove('active'));row.classList.add('active');
+      controls.target.set(s.w.x,s.w.y,s.w.z); camera.position.set(s.w.x+4,s.w.y+3,s.w.z-4); controls.update();});
+    list.appendChild(row);});
 }
 
 function writeStatus(demoReason){
   const el=$('status-line');
-  if(META.source==='db'){
-    const pct=META.rows? (100*META.corrupted/META.rows).toFixed(1):'0';
-    el.innerHTML=`Origen: <b>${DB_PATH}</b><br>
-      Lecturas leídas: <b>${META.rows.toLocaleString('es-CO')}</b><br>
-      Corruptas depuradas: <span class="bad">${META.corrupted}</span> (${pct}%)<br>
-      Sensores mapeados: <span class="ok">${POSITIONS.length}</span> · <b>15</b> × (T + H)`;
+  if(META.source==='db'){ const pct=META.rows?(100*META.corrupted/META.rows).toFixed(1):'0';
+    el.innerHTML=`Origen: <b>${DB_PATH}</b> + <b>${CONFIG_PATH}</b><br>Lecturas: <b>${META.rows.toLocaleString('es-CO')}</b><br>
+      Corruptas depuradas: <span class="bad">${META.corrupted}</span> (${pct}%)<br>Sensores ubicados: <span class="ok">${META.mapped}</span>`;
   } else {
-    el.innerHTML=`<span class="bad">Base de datos no cargada.</span><br>
-      ${demoReason?('<span style="color:#7a96a3">'+demoReason+'</span><br>'):''}
-      Mostrando <b>snapshot demo</b> incrustado.<br>
-      Publica en un servidor http (GitHub Pages) para leer <code>${DB_PATH}</code>.`;
-  }
-}
-
-// ── overlay helpers ───────────────────────────────────────────────────────
-function showOverlay(msg,sub,isErr){ const o=$('overlay');
-  o.style.display='flex'; o.classList.toggle('err',!!isErr);
-  $('overlay-msg').textContent=msg; $('overlay-sub').innerHTML=sub||''; }
-function hideOverlay(){ $('overlay').style.display='none'; }
-
-async function boot(){
-  try { await loadFromDB(); }
-  catch(e){
-    console.warn('DB load failed:',e);
-    // If we're on file://, fetch of the .db is blocked by the browser — go straight to demo.
-    const onFile = location.protocol==='file:';
-    loadDemo(onFile ? 'Abierto como archivo local (file://): el navegador bloquea la lectura del .db.'
-                    : ('Detalle: '+e.message));
+    el.innerHTML=`<span class="bad">Base de datos no cargada.</span><br>${demoReason?('<span style="color:#7a96a3">'+demoReason+'</span><br>'):''}
+      Mostrando <b>layout demo</b>.<br>Publica en http (GitHub Pages) para leer <code>${DB_PATH}</code>.`;
   }
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  CONTROLS WIRING
+//  LOADING
 // ══════════════════════════════════════════════════════════════════════════
-function setMetricButtons(){
-  $('m-temp').classList.toggle('on',currentMetric==='temp');
-  $('m-hum').classList.toggle('on',currentMetric==='hum');
-}
-$('m-temp').addEventListener('click',()=>{ if(currentMetric!=='temp'){ currentMetric='temp'; setMetricButtons(); rebuild(); }});
-$('m-hum').addEventListener('click', ()=>{ if(currentMetric!=='hum'){  currentMetric='hum';  setMetricButtons(); rebuild(); }});
+function showOverlay(msg,sub,isErr){const o=$('overlay');o.style.display='flex';o.classList.toggle('err',!!isErr);$('overlay-msg').textContent=msg;$('overlay-sub').innerHTML=sub||'';}
+function hideOverlay(){$('overlay').style.display='none';}
 
-$('sl-time').addEventListener('input',function(){
-  timeIndex[currentMetric]=+this.value; rebuild();
-});
-$('sl-opacity').addEventListener('input',function(){
-  volOpacity=this.value/100; $('sl-opacity-val').textContent=this.value+'%';
-  gSurf.children.forEach(c=>{ if(c.material) c.material.opacity=volOpacity; });
-  gVol.children.forEach(c=>{ if(c.material) c.material.opacity=volOpacity*0.7; });
-});
-$('sl-size').addEventListener('input',function(){
-  ptsSizeFactor=this.value/12; $('sl-size-val').textContent=this.value;
-  gPts.children.forEach(c=>{ if(c.userData.idx!==undefined) c.scale.setScalar(ptsSizeFactor); });
-});
-[['tog-surf',gSurf],['tog-vol',gVol],['tog-pts',gPts],['tog-box',gBox],['tog-labels',gLabels]].forEach(([id,grp])=>{
+async function fetchConfig(){
+  try{ const r=await fetch(CONFIG_PATH,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); return await r.json(); }
+  catch(e){ console.warn('config.json fallback:',e); return FALLBACK_CONFIG; }
+}
+
+async function loadAll(){
+  showOverlay('Cargando…','',false);
+  CONFIG=await fetchConfig();
+  const SQL=await initSqlJs({locateFile:f=>SQLJS_BASE+f});
+  const resp=await fetch(DB_PATH,{cache:'no-store'}); if(!resp.ok) throw new Error(`No se pudo leer ${DB_PATH} (HTTP ${resp.status})`);
+  const db=new SQL.Database(new Uint8Array(await resp.arrayBuffer()));
+
+  const meta=db.exec(`SELECT sensor_id,type FROM sensor WHERE module_id='${MODULE_ID}' AND is_active=1`);
+  const metricFromDb={}; const typeRe=/^(humedad|temperatura)/i;
+  if(meta.length) for(const r of meta[0].values){ const m=String(r[1]||'').trim().match(typeRe); if(m) metricFromDb[r[0]]=m[1].toLowerCase().startsWith('t')?'temp':'hum'; }
+
+  const ids=(CONFIG.sensors||[]).map(s=>s.sensor_id);
+  const metricById={}; (CONFIG.sensors||[]).forEach(s=>metricById[s.sensor_id]=s.metric||metricFromDb[s.sensor_id]);
+  const readingsBySensor={}; let total=0,corrupt=0;
+  if(ids.length){
+    const data=db.exec(`SELECT sensor_id,measure_date,data_value FROM sensor_data WHERE sensor_id IN (${ids.join(',')})`);
+    if(data.length) for(const r of data[0].values){ total++; const sid=r[0],ds=r[1],raw=r[2]; const metric=metricById[sid]; if(!metric) continue;
+      const c=cleanValue(raw,metric); if((typeof raw!=='number')||!c.valid) corrupt++; if(!c.valid) continue;
+      const t=Date.parse(String(ds).replace(' ','T')+'Z'); if(isNaN(t)) continue;
+      (readingsBySensor[sid]=readingsBySensor[sid]||[]).push({t,v:c.value}); }
+  }
+  Object.values(readingsBySensor).forEach(a=>a.sort((x,y)=>y.t-x.t)); db.close();
+
+  META={rows:total,corrupted:corrupt,mapped:0,source:'db'};
+  buildModel(CONFIG,readingsBySensor,metricFromDb);
+  if(!SENSORS.length) throw new Error('config.json no define sensores válidos.');
+  currentMetric='temp'; setMetricButtons();
+  buildStatic(); frameCamera(); applyState(); writeStatus(); hideOverlay();
+}
+
+function loadDemo(reason){
+  CONFIG=CONFIG||FALLBACK_CONFIG;
+  const now=Date.now(); const readingsBySensor={}; const metricFromDb={};
+  (CONFIG.sensors||[]).forEach(s=>{ metricFromDb[s.sensor_id]=s.metric;
+    const base=s.metric==='temp'?27:56; const jitter=(s.sensor_id%7)-3;
+    readingsBySensor[s.sensor_id]=[{t:now,v:base+jitter}]; });
+  META={rows:(CONFIG.sensors||[]).length,corrupted:0,mapped:0,source:'demo'};
+  buildModel(CONFIG,readingsBySensor,metricFromDb);
+  currentMetric='temp'; setMetricButtons(); buildStatic(); frameCamera(); applyState(); writeStatus(reason); hideOverlay();
+}
+
+async function boot(){ try{ await loadAll(); }
+  catch(e){ console.warn('load failed:',e); const onFile=location.protocol==='file:';
+    loadDemo(onFile?'Abierto como archivo local (file://): el navegador bloquea la lectura de la DB.':('Detalle: '+e.message)); } }
+
+// ══════════════════════════════════════════════════════════════════════════
+//  CONTROLS
+// ══════════════════════════════════════════════════════════════════════════
+function setMetricButtons(){ $('m-temp').classList.toggle('on',currentMetric==='temp'); $('m-hum').classList.toggle('on',currentMetric==='hum'); }
+$('m-temp').addEventListener('click',()=>{ if(currentMetric!=='temp'){currentMetric='temp';setMetricButtons();applyState();}});
+$('m-hum').addEventListener('click', ()=>{ if(currentMetric!=='hum'){ currentMetric='hum'; setMetricButtons();applyState();}});
+$('sl-time').addEventListener('input',function(){ timeIndex[currentMetric]=+this.value; applyState(); });
+$('sl-opacity').addEventListener('input',function(){ volOpacity=this.value/100; $('sl-opacity-val').textContent=this.value+'%';
+  gVol.children.forEach(c=>{if(c.material)c.material.opacity=volOpacity;}); });
+$('sl-size').addEventListener('input',function(){ ptsSizeFactor=this.value/12; $('sl-size-val').textContent=this.value;
+  gPts.children.forEach(c=>{if(c.userData.idx!==undefined)c.scale.setScalar(ptsSizeFactor);}); });
+[['tog-vol',gVol],['tog-pts',gPts],['tog-box',gBox],['tog-feat',gFeat],['tog-labels',gLabels]].forEach(([id,grp])=>{
   const el=$(id); grp.visible=el.classList.contains('on');
-  el.addEventListener('click',function(){ this.classList.toggle('on'); grp.visible=this.classList.contains('on'); });
-});
+  el.addEventListener('click',function(){this.classList.toggle('on');grp.visible=this.classList.contains('on');if(id==='tog-box')gAxis.visible=grp.visible;});});
 $('btn-reload').addEventListener('click',boot);
 
-// ── Raycaster tooltip ─────────────────────────────────────────────────────
-const raycaster=new THREE.Raycaster(); raycaster.params.Points={threshold:0.3};
-const mouse=new THREE.Vector2(), tooltip=$('tooltip');
-canvas.addEventListener('mousemove',e=>{
-  const rect=canvas.getBoundingClientRect();
-  mouse.x=2*(e.clientX-rect.left)/rect.width-1; mouse.y=-2*(e.clientY-rect.top)/rect.height+1;
-  raycaster.setFromCamera(mouse,camera);
-  const meshes=gPts.children.filter(c=>c.userData.idx!==undefined);
-  const hits=raycaster.intersectObjects(meshes);
-  if(hits.length){
-    const ud=hits[0].object.userData, p=ud.pos, unit=METRIC_UNIT[currentMetric];
-    const valid=snapVals.filter(v=>v!=null);
-    const vMin=valid.length?Math.min(...valid):0, vMax=valid.length?Math.max(...valid):1;
+const raycaster=new THREE.Raycaster(); raycaster.params.Points={threshold:0.3}; const mouse=new THREE.Vector2(), tooltip=$('tooltip');
+canvas.addEventListener('mousemove',e=>{ const rect=canvas.getBoundingClientRect();
+  mouse.x=2*(e.clientX-rect.left)/rect.width-1; mouse.y=-2*(e.clientY-rect.top)/rect.height+1; raycaster.setFromCamera(mouse,camera);
+  const meshes=gPts.children.filter(c=>c.userData.idx!==undefined); const hits=raycaster.intersectObjects(meshes);
+  if(hits.length){ const ud=hits[0].object.userData,s=ud.s,unit=METRIC_UNIT[currentMetric];
+    const valid=snapVals.filter(v=>v!=null); const vMin=valid.length?Math.min(...valid):0,vMax=valid.length?Math.max(...valid):1;
     const rgb=ud.has?valToRgb(ud.val,vMin,vMax):[150,170,180];
-    tooltip.style.display='block';
-    tooltip.style.left=(e.clientX-rect.left+14)+'px'; tooltip.style.top=(e.clientY-rect.top-10)+'px';
-    tooltip.innerHTML=`<span style="color:${cssRgb(rgb)};font-weight:700">S${String(ud.idx+1).padStart(2,'0')} · ${p.key}</span><br>`+
-      `${METRIC_NAME[currentMetric][0].toUpperCase()+METRIC_NAME[currentMetric].slice(1)}: `+
-      `<strong style="color:#fff">${ud.has?ud.val.toFixed(1)+' '+unit:'sin dato'}</strong><br>`+
-      `X:${p.x.toFixed(1)}m  Y:${p.y.toFixed(1)}m  Z:${p.z.toFixed(1)}m`;
+    tooltip.style.display='block'; tooltip.style.left=(e.clientX-rect.left+14)+'px'; tooltip.style.top=(e.clientY-rect.top-10)+'px';
+    tooltip.innerHTML=`<span style="color:${cssRgb(rgb)};font-weight:700">${s.label} · #${s.sensor_id}</span><br>`+
+      `${METRIC_NAME[currentMetric][0].toUpperCase()+METRIC_NAME[currentMetric].slice(1)}: <strong style="color:#fff">${ud.has?ud.val.toFixed(1)+' '+unit:'sin dato'}</strong><br>`+
+      `x:${s.cm.x} y:${s.cm.y} z:${s.cm.z} cm`;
     canvas.style.cursor='crosshair';
-  } else { tooltip.style.display='none'; canvas.style.cursor='grab'; }
-});
+  } else { tooltip.style.display='none'; canvas.style.cursor='grab'; }});
 
-// ── Resize + render loop ──────────────────────────────────────────────────
-function resize(){ const w=wrap.clientWidth,h=wrap.clientHeight;
-  renderer.setSize(w,h); camera.aspect=w/h; camera.updateProjectionMatrix(); }
+function resize(){const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
 window.addEventListener('resize',resize); resize();
-(function animate(){ requestAnimationFrame(animate); controls.update();
-  gPts.children.forEach(c=>{ if(c.userData.isRing) c.lookAt(camera.position); });
-  renderer.render(scene,camera); })();
+(function animate(){requestAnimationFrame(animate);controls.update();gPts.children.forEach(c=>{if(c.userData.isRing)c.lookAt(camera.position);});renderer.render(scene,camera);})();
+document.addEventListener('keydown',e=>{ if(e.key==='0'||e.code==='Digit0'||e.code==='Numpad0') resetView(); });
 
-// ── Reset view: key '0' → front elevation ─────────────────────────────────
-document.addEventListener('keydown',e=>{
-  if(e.key==='0'||e.code==='Digit0'||e.code==='Numpad0'){
-    const cx=DIMS.L/2,cy=DIMS.H/2,cz=DIMS.A/2;
-    controls.target.set(cx,cy,cz);
-    camera.position.set(cx,cy+5,cz+DIMS.A+16); camera.lookAt(cx,cy,cz); controls.update();
-  }
-});
-
-// GO
 boot();
 </script>
 </body>
