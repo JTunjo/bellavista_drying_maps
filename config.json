@@ -16,23 +16,23 @@
     {
       "name": "Puerta",
       "type": "door",
-      "x": 220,
-      "y": 0,
-      "z": 0
+      "x": 0,
+      "y": 20,
+      "z": 50
     },
     {
       "name": "Ventana E",
       "type": "window",
       "x": 440,
-      "y": 600,
-      "z": 150
+      "y": 1200,
+      "z": 220
     },
     {
       "name": "Ventana O",
       "type": "window",
-      "x": 0,
-      "y": 1100,
-      "z": 150
+      "x": 440,
+      "y": 2700,
+      "z": 220
     }
   ],
   "sensors": [
