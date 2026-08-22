@@ -222,7 +222,10 @@ const FALLBACK_CONFIG = {
     "Ej: area x:440,y:1700,z:230 => 4.40m ancho, 17m profundidad, 2.30m alto.",
     "Ej: sensor x:210,y:125,z:110 => 1.25m adentro, 1.10m de altura, a 2.10m del muro izquierdo.",
     "Las posiciones de los sensores aqui son PLACEHOLDERS: reemplazalas con tus medidas reales.",
-    "La altura (z) puede diferir por sensor dentro de una misma linea."
+    "La altura (z) puede diferir por sensor dentro de una misma linea.",
+    "Sensores EXTERNOS (contraste): agrega \"external\": true a un sensor para ubicarlo FUERA del recinto.",
+    "Puedes usar coordenadas negativas (ej. y:-150 = 1.5m frente a FRENTE). Los externos se dibujan como rombo,",
+    "pero NO afectan el campo 3D, la escala de color ni las estadisticas (min/max/prom/σ)."
   ],
   "area": {
     "x": 440,
@@ -233,23 +236,23 @@ const FALLBACK_CONFIG = {
     {
       "name": "Puerta",
       "type": "door",
-      "x": 220,
-      "y": 0,
-      "z": 0
+      "x": 0,
+      "y": 20,
+      "z": 50
     },
     {
       "name": "Ventana E",
       "type": "window",
       "x": 440,
-      "y": 600,
-      "z": 150
+      "y": 370,
+      "z": 220
     },
     {
       "name": "Ventana O",
       "type": "window",
-      "x": 0,
-      "y": 1100,
-      "z": 150
+      "x": 440,
+      "y": 930,
+      "z": 220
     }
   ],
   "sensors": [
@@ -552,6 +555,72 @@ const FALLBACK_CONFIG = {
       "x": 355,
       "y": 1340,
       "z": 145
+    },
+    {
+      "sensor_id": 331,
+      "metric": "hum",
+      "label": "Marquesina H16",
+      "line": 6,
+      "pos": 1,
+      "external": true,
+      "x": -10,
+      "y": 280,
+      "z": 155
+    },
+    {
+      "sensor_id": 332,
+      "metric": "temp",
+      "label": "Marquesina T16",
+      "line": 6,
+      "pos": 1,
+      "external": true,
+      "x": -10,
+      "y": 280,
+      "z": 155
+    },
+    {
+      "sensor_id": 333,
+      "metric": "hum",
+      "label": "Marquesina H17",
+      "line": 6,
+      "pos": 2,
+      "external": true,
+      "x": -10,
+      "y": 600,
+      "z": 150
+    },
+    {
+      "sensor_id": 334,
+      "metric": "temp",
+      "label": "Marquesina T17",
+      "line": 6,
+      "pos": 2,
+      "external": true,
+      "x": -10,
+      "y": 600,
+      "z": 150
+    },
+    {
+      "sensor_id": 335,
+      "metric": "hum",
+      "label": "Marquesina H18",
+      "line": 6,
+      "pos": 3,
+      "external": true,
+      "x": -60,
+      "y": 1010,
+      "z": 235
+    },
+    {
+      "sensor_id": 336,
+      "metric": "temp",
+      "label": "Marquesina T18",
+      "line": 6,
+      "pos": 3,
+      "external": true,
+      "x": -60,
+      "y": 1010,
+      "z": 235
     }
   ]
 };
@@ -644,7 +713,7 @@ function buildModel(cfg, readingsBySensor, metricFromDb){
     const series=bucketize(readingsBySensor[cs.sensor_id]);       // 5-min medians, DESC
     series.forEach(r=>spineSet.add(r.t));
     SENSORS.push({ sensor_id:cs.sensor_id, metric, label:cs.label||('S'+cs.sensor_id),
-                   line:cs.line, pos:cs.pos, cm:p, w:toWorld(p), series });
+                   line:cs.line, pos:cs.pos, external:!!cs.external, cm:p, w:toWorld(p), series });
   });
   spine=[...spineSet].sort((a,b)=>a-b);
   timeIndex=Math.max(0,spine.length-1);                          // default: latest window
@@ -721,7 +790,9 @@ function buildStatic(){
 function applyState(){
   const act=activeSensors(); const T=currentTargetMs();
   snapVals=act.map(s=>valueAsOf(s.series,T));
-  const valid=[]; act.forEach((s,i)=>{ if(snapVals[i]!=null) valid.push({s,v:snapVals[i]}); });
+  // Interior sensors drive the field, the colour scale, and the aggregate stats.
+  // External (contrast) sensors are still drawn + listed, but excluded from all of that.
+  const valid=[]; act.forEach((s,i)=>{ if(!s.external && snapVals[i]!=null) valid.push({s,v:snapVals[i]}); });
   let vMin=0,vMax=1;
   if(valid.length){ vMin=Math.min(...valid.map(o=>o.v)); vMax=Math.max(...valid.map(o=>o.v)); if(vMin===vMax){vMin-=1;vMax+=1;} }
   fieldFn = valid.length>=2 ? buildIDW(valid.map(o=>[o.s.w.x,o.s.w.y,o.s.w.z]), valid.map(o=>o.v)) : null;
@@ -763,9 +834,10 @@ function buildField(vMin,vMax){
 function buildPoints(act,vMin,vMax){
   gPts.clear();
   act.forEach((s,i)=>{ const val=snapVals[i],has=val!=null; const rgb=has?valToRgb(val,vMin,vMax):[130,150,160]; const color=threeRgb(rgb);
-    const mesh=new THREE.Mesh(new THREE.SphereGeometry(0.16,14,14),new THREE.MeshPhongMaterial({color,emissive:color,emissiveIntensity:has?0.35:0.05,transparent:!has,opacity:has?1:0.5}));
+    const geo=s.external ? new THREE.OctahedronGeometry(0.22) : new THREE.SphereGeometry(0.16,14,14);
+    const mesh=new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color,emissive:color,emissiveIntensity:has?0.35:0.05,transparent:!has,opacity:has?1:0.5}));
     mesh.position.set(s.w.x,s.w.y,s.w.z); mesh.userData={idx:i,val,has,s}; mesh.scale.setScalar(ptsSizeFactor); gPts.add(mesh);
-    const ring=new THREE.Mesh(new THREE.RingGeometry(0.21,0.30,22),new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,transparent:true,opacity:0.45,depthWrite:false}));
+    const ring=new THREE.Mesh(new THREE.RingGeometry(0.21,0.30,22),new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,transparent:true,opacity:s.external?0.9:0.45,depthWrite:false}));
     ring.position.set(s.w.x,s.w.y,s.w.z); ring.userData={isRing:true}; gPts.add(ring);});
 }
 function buildLabels(act,vMin,vMax){
@@ -808,11 +880,13 @@ function updateUI(act,valid,vMin,vMax,T){
   sl.max=Math.max(0,spine.length-1); sl.value=Math.min(timeIndex,Math.max(0,spine.length-1));
   $('time-sub').textContent=spine.length?`Ventana ${winTxt} · ${spine.length} bloques de 5 min · mediana`:'Sin histórico';
 
+  const nExt = act.filter(s=>s.external).length;
+  const extTxt = nExt ? ` <span class="hud-sub">(+${nExt} ext.)</span>` : '';
   // on-map heads-up: which window + aggregated readings at this instant
   $('hud').innerHTML = snapMs==null ? '<span class="hud-win">Sin datos</span>' :
     `<div class="hud-win">${fmtDate(snapMs)}</div>`+
     `<div class="hud-range">ventana ${winTxt} (mediana 5 min)</div>`+
-    `<div class="hud-metric">${METRIC_NAME[currentMetric]} · ${act.length} sensores</div>`+
+    `<div class="hud-metric">${METRIC_NAME[currentMetric]} · ${vals.length} sensores${extTxt}</div>`+
     `<div class="hud-big">${vals.length?avg.toFixed(1):'—'}<sup>${unit}</sup> <span class="hud-sub">prom.</span></div>`+
     `<div class="hud-sub">mín <b>${vals.length?vMin.toFixed(1):'—'}${unit}</b> · máx <b>${vals.length?vMax.toFixed(1):'—'}${unit}</b> · σ <b>${vals.length?std.toFixed(2):'—'}</b></div>`;
 
@@ -821,7 +895,7 @@ function updateUI(act,valid,vMin,vMax,T){
     const row=document.createElement('div'); row.className='sensor-row'+(has?'':' stale'); row.dataset.idx=i;
     row.innerHTML=`<span class="sensor-dot" style="background:${cssRgb(rgb)}"></span>
       <span class="sensor-id">${s.label.replace('Marquesina ','')}</span>
-      <span class="sensor-pos">L${s.line||'?'}·${s.pos||'?'}</span>
+      <span class="sensor-pos">${s.external?'EXT':('L'+(s.line||'?')+'·'+(s.pos||'?'))}</span>
       <span class="sensor-val">${has?val.toFixed(1)+unit:'s/d'}</span>`;
     row.addEventListener('click',()=>{document.querySelectorAll('.sensor-row').forEach(r=>r.classList.remove('active'));row.classList.add('active');
       controls.target.set(s.w.x,s.w.y,s.w.z); camera.position.set(s.w.x+4,s.w.y+3,s.w.z-4); controls.update();});

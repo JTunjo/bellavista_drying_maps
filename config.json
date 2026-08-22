@@ -5,7 +5,10 @@
     "Ej: area x:440,y:1700,z:230 => 4.40m ancho, 17m profundidad, 2.30m alto.",
     "Ej: sensor x:210,y:125,z:110 => 1.25m adentro, 1.10m de altura, a 2.10m del muro izquierdo.",
     "Las posiciones de los sensores aqui son PLACEHOLDERS: reemplazalas con tus medidas reales.",
-    "La altura (z) puede diferir por sensor dentro de una misma linea."
+    "La altura (z) puede diferir por sensor dentro de una misma linea.",
+    "Sensores EXTERNOS (contraste): agrega \"external\": true a un sensor para ubicarlo FUERA del recinto.",
+    "Puedes usar coordenadas negativas (ej. y:-150 = 1.5m frente a FRENTE). Los externos se dibujan como rombo,",
+    "pero NO afectan el campo 3D, la escala de color ni las estadisticas (min/max/prom/σ)."
   ],
   "area": {
     "x": 440,
@@ -335,6 +338,72 @@
       "x": 355,
       "y": 1340,
       "z": 145
+    },
+    {
+      "sensor_id": 331,
+      "metric": "hum",
+      "label": "Marquesina H16",
+      "line": 6,
+      "pos": 1,
+      "external": true,
+      "x": -10,
+      "y": 280,
+      "z": 155
+    },
+    {
+      "sensor_id": 332,
+      "metric": "temp",
+      "label": "Marquesina T16",
+      "line": 6,
+      "pos": 1,
+      "external": true,
+      "x": -10,
+      "y": 280,
+      "z": 155
+    },
+    {
+      "sensor_id": 333,
+      "metric": "hum",
+      "label": "Marquesina H17",
+      "line": 6,
+      "pos": 2,
+      "external": true,
+      "x": -10,
+      "y": 600,
+      "z": 150
+    },
+    {
+      "sensor_id": 334,
+      "metric": "temp",
+      "label": "Marquesina T17",
+      "line": 6,
+      "pos": 2,
+      "external": true,
+      "x": -10,
+      "y": 600,
+      "z": 150
+    },
+    {
+      "sensor_id": 335,
+      "metric": "hum",
+      "label": "Marquesina H18",
+      "line": 6,
+      "pos": 3,
+      "external": true,
+      "x": -60,
+      "y": 1010,
+      "z": 235
+    },
+    {
+      "sensor_id": 336,
+      "metric": "temp",
+      "label": "Marquesina T18",
+      "line": 6,
+      "pos": 3,
+      "external": true,
+      "x": -60,
+      "y": 1010,
+      "z": 235
     }
   ]
 }
