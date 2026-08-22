@@ -80,6 +80,15 @@
   #three-canvas { display:block; width:100%; height:100%; }
   #tooltip { position:absolute; pointer-events:none; background:rgba(14,20,25,.95); border:1px solid var(--accent); border-radius:6px;
     padding:8px 12px; font-family:var(--mono); font-size:10px; color:#dfeaf0; display:none; line-height:1.7; z-index:5; }
+  #hud { position:absolute; top:14px; left:16px; background:rgba(14,20,25,.9); border:1px solid var(--accent); border-radius:8px;
+    padding:11px 15px; font-family:var(--mono); font-size:11px; color:#cfe0e8; line-height:1.75; z-index:6; pointer-events:none; min-width:210px; }
+  #hud .hud-win { font-size:12px; font-weight:700; color:#fff; letter-spacing:.02em; }
+  #hud .hud-range { color:#7fd0e6; font-size:10px; margin-bottom:6px; }
+  #hud .hud-metric { color:#8fb4c2; text-transform:uppercase; letter-spacing:.1em; font-size:9px; margin-top:6px; }
+  #hud .hud-big { font-size:17px; font-weight:800; color:#fff; }
+  #hud .hud-big sup { font-size:9px; color:#8fb4c2; font-weight:400; }
+  #hud .hud-sub { color:#a9c3cf; font-size:10px; }
+  #hud .hud-sub b { color:#dfeaf0; font-weight:700; }
   .hint { position:absolute; bottom:14px; right:16px; font-family:var(--mono); font-size:9px; color:rgba(255,255,255,0.4); text-align:right; pointer-events:none; line-height:1.8; }
   #overlay { position:absolute; inset:0; background:rgba(8,12,16,0.92); z-index:20; display:flex; flex-direction:column; align-items:center;
     justify-content:center; gap:14px; font-family:var(--mono); color:#cfe0e8; text-align:center; padding:30px; }
@@ -168,6 +177,7 @@
 
   <div id="canvas-wrap">
     <canvas id="three-canvas"></canvas>
+    <div id="hud"></div>
     <div id="tooltip"></div>
     <div class="hint">Clic + arrastrar · Rotar<br>Scroll · Zoom<br>Clic derecho · Desplazar<br>Hover · Info<br><strong style="color:rgba(255,255,255,0.6)">[0]</strong> · Vista frontal</div>
     <div id="overlay"><div class="spinner"></div><div class="msg" id="overlay-msg">Cargando…</div><div class="sub" id="overlay-sub"></div></div>
@@ -756,7 +766,6 @@ function updateUI(act,valid,vMin,vMax,T){
 
   $('scale-title').textContent='Escala de '+METRIC_NAME[currentMetric]; $('scale-unit').textContent=unit;
   $('t-min').textContent=vals.length?vMin.toFixed(1):'—'; $('t-max').textContent=vals.length?vMax.toFixed(1):'—';
-  ['u-min','u-max','u-avg','u-std'].forEach(id=>$(id).textContent=unit);
   $('s-min').innerHTML=`${vals.length?vMin.toFixed(1):'—'}<sup>${unit}</sup>`;
   $('s-max').innerHTML=`${vals.length?vMax.toFixed(1):'—'}<sup>${unit}</sup>`;
   $('s-avg').innerHTML=`${vals.length?avg.toFixed(1):'—'}<sup>${unit}</sup>`;
@@ -774,6 +783,14 @@ function updateUI(act,valid,vMin,vMax,T){
   const sl=$('sl-time');
   sl.max=Math.max(0,spine.length-1); sl.value=Math.min(timeIndex,Math.max(0,spine.length-1));
   $('time-sub').textContent=spine.length?`Ventana ${winTxt} · ${spine.length} bloques de 5 min · mediana`:'Sin histórico';
+
+  // on-map heads-up: which window + aggregated readings at this instant
+  $('hud').innerHTML = snapMs==null ? '<span class="hud-win">Sin datos</span>' :
+    `<div class="hud-win">${fmtDate(snapMs)}</div>`+
+    `<div class="hud-range">ventana ${winTxt} (mediana 5 min)</div>`+
+    `<div class="hud-metric">${METRIC_NAME[currentMetric]} · ${act.length} sensores</div>`+
+    `<div class="hud-big">${vals.length?avg.toFixed(1):'—'}<sup>${unit}</sup> <span class="hud-sub">prom.</span></div>`+
+    `<div class="hud-sub">mín <b>${vals.length?vMin.toFixed(1):'—'}${unit}</b> · máx <b>${vals.length?vMax.toFixed(1):'—'}${unit}</b> · σ <b>${vals.length?std.toFixed(2):'—'}</b></div>`;
 
   const list=$('sensor-list'); list.innerHTML='';
   act.forEach((s,i)=>{ const val=snapVals[i],has=val!=null; const rgb=has?valToRgb(val,vMin,vMax):[130,150,160];
