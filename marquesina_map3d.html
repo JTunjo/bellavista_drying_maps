@@ -125,7 +125,7 @@
     </div>
 
     <div class="section">
-      <div class="section-title">Estadísticas · instante actual</div>
+      <div class="section-title">Estadísticas · ventana actual</div>
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-label">Mínimo</div><div class="stat-val" id="s-min">—<sup id="u-min">°C</sup></div></div>
         <div class="stat-card"><div class="stat-label">Máximo</div><div class="stat-val" id="s-max">—<sup id="u-max">°C</sup></div></div>
@@ -135,7 +135,7 @@
     </div>
 
     <div class="section">
-      <div class="section-title">Instante</div>
+      <div class="section-title">Ventana de tiempo · 5 min</div>
       <div class="time-readout" id="time-readout">—</div>
       <div class="ctrl-row" style="margin-bottom:4px"><input type="range" id="sl-time" min="0" max="0" value="0" step="1" style="flex:1"/></div>
       <div class="time-sub" id="time-sub">Arrastra para recorrer el histórico · fin = último dato</div>
@@ -242,9 +242,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T1",
       "line": 1,
       "pos": 1,
-      "x": 110,
-      "y": 283,
-      "z": 210
+      "x": 70,
+      "y": 280,
+      "z": 113
     },
     {
       "sensor_id": 301,
@@ -252,9 +252,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H1",
       "line": 1,
       "pos": 1,
-      "x": 110,
-      "y": 283,
-      "z": 210
+      "x": 70,
+      "y": 280,
+      "z": 113
     },
     {
       "sensor_id": 304,
@@ -262,9 +262,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T2",
       "line": 1,
       "pos": 2,
-      "x": 220,
-      "y": 283,
-      "z": 170
+      "x": 204,
+      "y": 280,
+      "z": 178
     },
     {
       "sensor_id": 303,
@@ -272,9 +272,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H2",
       "line": 1,
       "pos": 2,
-      "x": 220,
-      "y": 283,
-      "z": 170
+      "x": 204,
+      "y": 280,
+      "z": 178
     },
     {
       "sensor_id": 306,
@@ -282,9 +282,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T3",
       "line": 1,
       "pos": 3,
-      "x": 330,
-      "y": 283,
-      "z": 195
+      "x": 355,
+      "y": 280,
+      "z": 118
     },
     {
       "sensor_id": 305,
@@ -292,9 +292,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H3",
       "line": 1,
       "pos": 3,
-      "x": 330,
-      "y": 283,
-      "z": 195
+      "x": 355,
+      "y": 280,
+      "z": 118
     },
     {
       "sensor_id": 308,
@@ -302,9 +302,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T4",
       "line": 2,
       "pos": 1,
-      "x": 110,
-      "y": 567,
-      "z": 210
+      "x": 70,
+      "y": 540,
+      "z": 215
     },
     {
       "sensor_id": 307,
@@ -312,9 +312,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H4",
       "line": 2,
       "pos": 1,
-      "x": 110,
-      "y": 567,
-      "z": 210
+      "x": 70,
+      "y": 540,
+      "z": 215
     },
     {
       "sensor_id": 310,
@@ -322,9 +322,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T5",
       "line": 2,
       "pos": 2,
-      "x": 220,
-      "y": 567,
-      "z": 170
+      "x": 204,
+      "y": 540,
+      "z": 124
     },
     {
       "sensor_id": 309,
@@ -332,9 +332,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H5",
       "line": 2,
       "pos": 2,
-      "x": 220,
-      "y": 567,
-      "z": 170
+      "x": 204,
+      "y": 540,
+      "z": 124
     },
     {
       "sensor_id": 312,
@@ -342,9 +342,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T6",
       "line": 2,
       "pos": 3,
-      "x": 330,
-      "y": 567,
-      "z": 195
+      "x": 355,
+      "y": 540,
+      "z": 183
     },
     {
       "sensor_id": 311,
@@ -352,9 +352,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H6",
       "line": 2,
       "pos": 3,
-      "x": 330,
-      "y": 567,
-      "z": 195
+      "x": 355,
+      "y": 540,
+      "z": 183
     },
     {
       "sensor_id": 314,
@@ -362,9 +362,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T7",
       "line": 3,
       "pos": 1,
-      "x": 110,
-      "y": 850,
-      "z": 210
+      "x": 70,
+      "y": 800,
+      "z": 118
     },
     {
       "sensor_id": 313,
@@ -372,9 +372,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H7",
       "line": 3,
       "pos": 1,
-      "x": 110,
-      "y": 850,
-      "z": 210
+      "x": 70,
+      "y": 800,
+      "z": 118
     },
     {
       "sensor_id": 316,
@@ -382,9 +382,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T8",
       "line": 3,
       "pos": 2,
-      "x": 220,
-      "y": 850,
-      "z": 170
+      "x": 204,
+      "y": 800,
+      "z": 177
     },
     {
       "sensor_id": 315,
@@ -392,9 +392,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H8",
       "line": 3,
       "pos": 2,
-      "x": 220,
-      "y": 850,
-      "z": 170
+      "x": 204,
+      "y": 800,
+      "z": 177
     },
     {
       "sensor_id": 318,
@@ -402,9 +402,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T9",
       "line": 3,
       "pos": 3,
-      "x": 330,
-      "y": 850,
-      "z": 195
+      "x": 355,
+      "y": 800,
+      "z": 126
     },
     {
       "sensor_id": 317,
@@ -412,9 +412,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H9",
       "line": 3,
       "pos": 3,
-      "x": 330,
-      "y": 850,
-      "z": 195
+      "x": 355,
+      "y": 800,
+      "z": 126
     },
     {
       "sensor_id": 320,
@@ -422,9 +422,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T10",
       "line": 4,
       "pos": 1,
-      "x": 110,
-      "y": 1133,
-      "z": 210
+      "x": 70,
+      "y": 1100,
+      "z": 195
     },
     {
       "sensor_id": 319,
@@ -432,9 +432,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H10",
       "line": 4,
       "pos": 1,
-      "x": 110,
-      "y": 1133,
-      "z": 210
+      "x": 70,
+      "y": 1100,
+      "z": 195
     },
     {
       "sensor_id": 322,
@@ -442,9 +442,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T11",
       "line": 4,
       "pos": 2,
-      "x": 220,
-      "y": 1133,
-      "z": 170
+      "x": 204,
+      "y": 1100,
+      "z": 117
     },
     {
       "sensor_id": 321,
@@ -452,9 +452,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H11",
       "line": 4,
       "pos": 2,
-      "x": 220,
-      "y": 1133,
-      "z": 170
+      "x": 204,
+      "y": 1100,
+      "z": 117
     },
     {
       "sensor_id": 324,
@@ -462,9 +462,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T12",
       "line": 4,
       "pos": 3,
-      "x": 330,
-      "y": 1133,
-      "z": 195
+      "x": 355,
+      "y": 1100,
+      "z": 177
     },
     {
       "sensor_id": 323,
@@ -472,9 +472,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H12",
       "line": 4,
       "pos": 3,
-      "x": 330,
-      "y": 1133,
-      "z": 195
+      "x": 355,
+      "y": 1100,
+      "z": 177
     },
     {
       "sensor_id": 326,
@@ -482,9 +482,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T13",
       "line": 5,
       "pos": 1,
-      "x": 110,
-      "y": 1417,
-      "z": 210
+      "x": 70,
+      "y": 1340,
+      "z": 119
     },
     {
       "sensor_id": 325,
@@ -492,9 +492,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H13",
       "line": 5,
       "pos": 1,
-      "x": 110,
-      "y": 1417,
-      "z": 210
+      "x": 70,
+      "y": 1340,
+      "z": 119
     },
     {
       "sensor_id": 328,
@@ -502,9 +502,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T14",
       "line": 5,
       "pos": 2,
-      "x": 220,
-      "y": 1417,
-      "z": 170
+      "x": 204,
+      "y": 1340,
+      "z": 197
     },
     {
       "sensor_id": 327,
@@ -512,9 +512,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H14",
       "line": 5,
       "pos": 2,
-      "x": 220,
-      "y": 1417,
-      "z": 170
+      "x": 204,
+      "y": 1340,
+      "z": 197
     },
     {
       "sensor_id": 330,
@@ -522,9 +522,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina T15",
       "line": 5,
       "pos": 3,
-      "x": 330,
-      "y": 1417,
-      "z": 195
+      "x": 355,
+      "y": 1340,
+      "z": 145
     },
     {
       "sensor_id": 329,
@@ -532,9 +532,9 @@ const FALLBACK_CONFIG = {
       "label": "Marquesina H15",
       "line": 5,
       "pos": 3,
-      "x": 330,
-      "y": 1417,
-      "z": 195
+      "x": 355,
+      "y": 1340,
+      "z": 145
     }
   ]
 };
@@ -595,26 +595,42 @@ let CONFIG=null;
 let SENSORS=[];                         // [{sensor_id,metric,label,cm:{x,y,z},w:{x,y,z},series[]}]
 let META={rows:0,corrupted:0,mapped:0,source:'demo'};
 let currentMetric='temp';
-let timestamps={temp:[],hum:[]};
-let timeIndex={temp:0,hum:0};
+let spine=[];            // shared 5-min timespine (bucket-start ms), ASC — same axis for both metrics
+let timeIndex=0;         // index into spine
+
+// ── 5-minute aggregation ────────────────────────────────────────────────────
+// Raw readings are irregular and temp/humidity are written in separate rounds,
+// so at any exact timestamp some sensors have no point. We group every reading
+// into a fixed 5-min window and take the MEDIAN per sensor per window (after
+// cleaning). The slider then steps window-by-window and every sensor is read at
+// the same instant. Windows a sensor never reported in fall back to its last
+// window (carry-forward) so the field stays whole.
+const BUCKET_MS = 5*60*1000;
+function median(a){ if(!a.length) return null; const s=[...a].sort((x,y)=>x-y); const m=s.length>>1;
+  return s.length%2 ? s[m] : (s[m-1]+s[m])/2; }
+function bucketize(readings){
+  const g=new Map();
+  for(const r of (readings||[])){ const b=Math.floor(r.t/BUCKET_MS)*BUCKET_MS;
+    (g.get(b) || g.set(b,[]).get(b)).push(r.v); }
+  const out=[]; for(const [b,vals] of g) out.push({t:b, v:median(vals), n:vals.length});
+  out.sort((x,y)=>y.t-x.t);   // DESC (for as-of lookup)
+  return out;
+}
 
 function buildModel(cfg, readingsBySensor, metricFromDb){
-  SENSORS=[];
+  SENSORS=[]; const spineSet=new Set();
   (cfg.sensors||[]).forEach(cs=>{
     const metric = cs.metric || metricFromDb[cs.sensor_id];
     if(metric!=='temp' && metric!=='hum') return;
     const p={x:+cs.x,y:+cs.y,z:+cs.z};
+    const series=bucketize(readingsBySensor[cs.sensor_id]);       // 5-min medians, DESC
+    series.forEach(r=>spineSet.add(r.t));
     SENSORS.push({ sensor_id:cs.sensor_id, metric, label:cs.label||('S'+cs.sensor_id),
-                   line:cs.line, pos:cs.pos, cm:p, w:toWorld(p),
-                   series: readingsBySensor[cs.sensor_id] || [] });
+                   line:cs.line, pos:cs.pos, cm:p, w:toWorld(p), series });
   });
-  ['temp','hum'].forEach(metric=>{
-    const set=new Set();
-    SENSORS.filter(s=>s.metric===metric).forEach(s=>s.series.forEach(r=>set.add(r.t)));
-    timestamps[metric]=[...set].sort((a,b)=>a-b);
-    timeIndex[metric]=Math.max(0,timestamps[metric].length-1);   // default latest
-  });
-  META.mapped=SENSORS.length;
+  spine=[...spineSet].sort((a,b)=>a-b);
+  timeIndex=Math.max(0,spine.length-1);                          // default: latest window
+  META.mapped=SENSORS.length; META.windows=spine.length;
 }
 
 function valueAsOf(series, T){
@@ -622,8 +638,7 @@ function valueAsOf(series, T){
   return series.length ? series[series.length-1].v : null;
 }
 function activeSensors(){ return SENSORS.filter(s=>s.metric===currentMetric); }
-function currentTargetMs(){ const ts=timestamps[currentMetric];
-  return ts.length ? ts[Math.min(timeIndex[currentMetric],ts.length-1)] : Infinity; }
+function currentTargetMs(){ return spine.length ? spine[Math.min(timeIndex,spine.length-1)] : Infinity; }
 
 // ══════════════════════════════════════════════════════════════════════════
 //  RBF (thin-plate) + color
@@ -679,10 +694,14 @@ function buildStatic(){
   tag('IZQ.',0,0.25,D/2,'#7a96a3');   tag('DER.',W,0.25,D/2,'#7a96a3');
   (CONFIG.features||[]).forEach(f=>{
     const w=toWorld(f); const isDoor=(f.type==='door'); const col=isDoor?0xc1663a:0x3fa7c9;
-    const geo=isDoor?new THREE.BoxGeometry(0.9,1.9,0.12):new THREE.BoxGeometry(0.8,0.8,0.12);
-    const mesh=new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color:col,transparent:true,opacity:0.55,emissive:col,emissiveIntensity:0.2}));
-    mesh.position.set(w.x, isDoor?(w.y+0.95):w.y, w.z); gFeat.add(mesh);
-    const lp=sprite(f.name, isDoor?'#e0975f':'#7fd0e6',1.9,0.6,15); lp.position.set(w.x,(isDoor?w.y+2.05:w.y+0.7),w.z); gFeat.add(lp);
+    const three=new THREE.Color(col);
+    const dot=new THREE.Mesh(new THREE.SphereGeometry(0.18,16,16),
+      new THREE.MeshPhongMaterial({color:three,emissive:three,emissiveIntensity:0.4}));
+    dot.position.set(w.x,w.y,w.z); gFeat.add(dot);
+    const ring=new THREE.Mesh(new THREE.RingGeometry(0.24,0.34,24),
+      new THREE.MeshBasicMaterial({color:three,side:THREE.DoubleSide,transparent:true,opacity:0.5,depthWrite:false}));
+    ring.position.set(w.x,w.y,w.z); ring.userData={isRing:true}; gFeat.add(ring);
+    const lp=sprite(f.name, isDoor?'#e0975f':'#7fd0e6',1.9,0.6,15); lp.position.set(w.x,w.y+0.42,w.z); gFeat.add(lp);
   });
 }
 
@@ -727,6 +746,8 @@ function buildLabels(act,vMin,vMax){
 const $=id=>document.getElementById(id);
 function fmtDate(ms){ if(ms==null||!isFinite(ms)) return '—';
   return new Date(ms).toLocaleString('es-CO',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function fmtHM(ms){ if(ms==null||!isFinite(ms)) return '—';
+  return new Date(ms).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}); }
 
 function updateUI(act,valid,vMin,vMax,T){
   const unit=METRIC_UNIT[currentMetric]; const vals=valid.map(o=>o.v);
@@ -745,13 +766,14 @@ function updateUI(act,valid,vMin,vMax,T){
   $('hdr-dims').innerHTML=`<strong>${W.toFixed(2)}</strong>×<strong>${D.toFixed(2)}</strong>×<strong>${H.toFixed(2)}</strong> m`;
   $('hdr-count').textContent=act.length;
   const src=$('hdr-source'); if(META.source==='db'){src.className='badge live';src.textContent='DB EN VIVO';}else{src.className='badge demo';src.textContent='DEMO (SIN DB)';}
-  const snapMs = timestamps[currentMetric].length ? T : null;
-  $('hdr-snapshot').textContent=`Instante: ${fmtDate(snapMs)}`;
-  $('time-readout').textContent=fmtDate(snapMs);
+  const snapMs = spine.length ? T : null;
+  const winTxt = snapMs!=null ? `${fmtHM(snapMs)}–${fmtHM(snapMs+BUCKET_MS)}` : '—';
+  $('hdr-snapshot').textContent=`Ventana: ${fmtDate(snapMs)} (5 min)`;
+  $('time-readout').textContent=snapMs!=null ? `${fmtDate(snapMs)}` : '—';
 
-  const ts=timestamps[currentMetric]; const sl=$('sl-time');
-  sl.max=Math.max(0,ts.length-1); sl.value=Math.min(timeIndex[currentMetric],Math.max(0,ts.length-1));
-  $('time-sub').textContent=ts.length?`${ts.length} lecturas · ${METRIC_NAME[currentMetric]} · fin = último dato`:'Sin histórico';
+  const sl=$('sl-time');
+  sl.max=Math.max(0,spine.length-1); sl.value=Math.min(timeIndex,Math.max(0,spine.length-1));
+  $('time-sub').textContent=spine.length?`Ventana ${winTxt} · ${spine.length} bloques de 5 min · mediana`:'Sin histórico';
 
   const list=$('sensor-list'); list.innerHTML='';
   act.forEach((s,i)=>{ const val=snapVals[i],has=val!=null; const rgb=has?valToRgb(val,vMin,vMax):[130,150,160];
@@ -769,7 +791,7 @@ function writeStatus(demoReason){
   const el=$('status-line');
   if(META.source==='db'){ const pct=META.rows?(100*META.corrupted/META.rows).toFixed(1):'0';
     el.innerHTML=`Origen: <b>${DB_PATH}</b> + <b>${CONFIG_PATH}</b><br>Lecturas: <b>${META.rows.toLocaleString('es-CO')}</b><br>
-      Corruptas depuradas: <span class="bad">${META.corrupted}</span> (${pct}%)<br>Sensores ubicados: <span class="ok">${META.mapped}</span>`;
+      Corruptas depuradas: <span class="bad">${META.corrupted}</span> (${pct}%)<br>Sensores ubicados: <span class="ok">${META.mapped}</span><br>Ventanas 5 min: <b>${META.windows||0}</b> (mediana)`;
   } else {
     el.innerHTML=`<span class="bad">Base de datos no cargada.</span><br>${demoReason?('<span style="color:#7a96a3">'+demoReason+'</span><br>'):''}
       Mostrando <b>layout demo</b>.<br>Publica en http (GitHub Pages) para leer <code>${DB_PATH}</code>.`;
@@ -838,7 +860,7 @@ async function boot(){ try{ await loadAll(); }
 function setMetricButtons(){ $('m-temp').classList.toggle('on',currentMetric==='temp'); $('m-hum').classList.toggle('on',currentMetric==='hum'); }
 $('m-temp').addEventListener('click',()=>{ if(currentMetric!=='temp'){currentMetric='temp';setMetricButtons();applyState();}});
 $('m-hum').addEventListener('click', ()=>{ if(currentMetric!=='hum'){ currentMetric='hum'; setMetricButtons();applyState();}});
-$('sl-time').addEventListener('input',function(){ timeIndex[currentMetric]=+this.value; applyState(); });
+$('sl-time').addEventListener('input',function(){ timeIndex=+this.value; applyState(); });
 $('sl-opacity').addEventListener('input',function(){ volOpacity=this.value/100; $('sl-opacity-val').textContent=this.value+'%';
   gVol.children.forEach(c=>{if(c.material)c.material.opacity=volOpacity;}); });
 $('sl-size').addEventListener('input',function(){ ptsSizeFactor=this.value/12; $('sl-size-val').textContent=this.value;
@@ -864,7 +886,10 @@ canvas.addEventListener('mousemove',e=>{ const rect=canvas.getBoundingClientRect
 
 function resize(){const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
 window.addEventListener('resize',resize); resize();
-(function animate(){requestAnimationFrame(animate);controls.update();gPts.children.forEach(c=>{if(c.userData.isRing)c.lookAt(camera.position);});renderer.render(scene,camera);})();
+(function animate(){requestAnimationFrame(animate);controls.update();
+  gPts.children.forEach(c=>{if(c.userData.isRing)c.lookAt(camera.position);});
+  gFeat.children.forEach(c=>{if(c.userData.isRing)c.lookAt(camera.position);});
+  renderer.render(scene,camera);})();
 document.addEventListener('keydown',e=>{ if(e.key==='0'||e.code==='Digit0'||e.code==='Numpad0') resetView(); });
 
 boot();
