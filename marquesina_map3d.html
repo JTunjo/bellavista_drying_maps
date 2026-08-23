@@ -225,7 +225,10 @@ const FALLBACK_CONFIG = {
     "La altura (z) puede diferir por sensor dentro de una misma linea.",
     "Sensores EXTERNOS (contraste): agrega \"external\": true a un sensor para ubicarlo FUERA del recinto.",
     "Puedes usar coordenadas negativas (ej. y:-150 = 1.5m frente a FRENTE). Los externos se dibujan como rombo,",
-    "pero NO afectan el campo 3D, la escala de color ni las estadisticas (min/max/prom/σ)."
+    "pero NO afectan el campo 3D, la escala de color ni las estadisticas (min/max/prom/σ).",
+    "Sensor con lectura dudosa antes de recambio: agrega \"replaceBefore\":\"YYYY-MM-DDTHH:MM:SS-05:00\"",
+    "y \"replaceWith\":\"mean\". Solo para VISUALIZACION: en ventanas anteriores a esa fecha, el valor mostrado",
+    "se reemplaza por la media de los demas sensores interiores de la misma metrica (marcado con ≈)."
   ],
   "area": {
     "x": 440,
@@ -374,7 +377,9 @@ const FALLBACK_CONFIG = {
       "pos": 3,
       "x": 355,
       "y": 540,
-      "z": 183
+      "z": 183,
+      "replaceBefore": "2026-08-23T12:00:00-05:00",
+      "replaceWith": "mean"
     },
     {
       "sensor_id": 314,
@@ -713,7 +718,9 @@ function buildModel(cfg, readingsBySensor, metricFromDb){
     const series=bucketize(readingsBySensor[cs.sensor_id]);       // 5-min medians, DESC
     series.forEach(r=>spineSet.add(r.t));
     SENSORS.push({ sensor_id:cs.sensor_id, metric, label:cs.label||('S'+cs.sensor_id),
-                   line:cs.line, pos:cs.pos, external:!!cs.external, cm:p, w:toWorld(p), series });
+                   line:cs.line, pos:cs.pos, external:!!cs.external, cm:p, w:toWorld(p), series,
+                   replaceBeforeMs: cs.replaceBefore!=null ? Date.parse(cs.replaceBefore) : null,
+                   replaceWith: cs.replaceWith||'mean' });
   });
   spine=[...spineSet].sort((a,b)=>a-b);
   timeIndex=Math.max(0,spine.length-1);                          // default: latest window
@@ -747,7 +754,7 @@ scene.add(new THREE.AmbientLight(0xffffff,0.8));
 const dl=new THREE.DirectionalLight(0xffffff,0.5); dl.position.set(20,40,20); scene.add(dl);
 const gBox=new THREE.Group(),gAxis=new THREE.Group(),gFeat=new THREE.Group(),gVol=new THREE.Group(),gPts=new THREE.Group(),gLabels=new THREE.Group();
 scene.add(gBox,gAxis,gFeat,gVol,gPts,gLabels);
-let volOpacity=0.40, ptsSizeFactor=1.0, fieldFn=null, snapVals=[];
+let volOpacity=0.40, ptsSizeFactor=1.0, fieldFn=null, snapVals=[], overriddenIds=new Set();
 
 function BOX(){ const a=CONFIG.area; return { W:cm(a.x), H:cm(a.z), D:cm(a.y) }; } // W=width(X) H=height(Y) D=depth(Z)
 
@@ -790,6 +797,16 @@ function buildStatic(){
 function applyState(){
   const act=activeSensors(); const T=currentTargetMs();
   snapVals=act.map(s=>valueAsOf(s.series,T));
+  // Display-only override: for a sensor flagged replaceBefore, in windows earlier than that
+  // instant show the mean of the other interior sensors of the same metric (its own readings
+  // are untrustworthy pre-recalibration). Uses a snapshot so peers aren't affected.
+  overriddenIds=new Set(); const orig=snapVals.slice();
+  act.forEach((s,i)=>{
+    if(s.replaceBeforeMs!=null && isFinite(T) && T < s.replaceBeforeMs){
+      const peers=[]; act.forEach((o,j)=>{ if(j!==i && !o.external && orig[j]!=null) peers.push(orig[j]); });
+      if(peers.length){ snapVals[i]=peers.reduce((a,b)=>a+b,0)/peers.length; overriddenIds.add(s.sensor_id); }
+    }
+  });
   // Interior sensors drive the field, the colour scale, and the aggregate stats.
   // External (contrast) sensors are still drawn + listed, but excluded from all of that.
   const valid=[]; act.forEach((s,i)=>{ if(!s.external && snapVals[i]!=null) valid.push({s,v:snapVals[i]}); });
@@ -843,7 +860,8 @@ function buildPoints(act,vMin,vMax){
 function buildLabels(act,vMin,vMax){
   gLabels.clear(); const unit=METRIC_UNIT[currentMetric];
   act.forEach((s,i)=>{ const val=snapVals[i],has=val!=null; const rgb=has?valToRgb(val,vMin,vMax):[130,150,160];
-    const sp=sprite(has?`${val.toFixed(1)}${unit}`:'s/d',cssRgb(rgb),1.5,0.5,16); sp.position.set(s.w.x,s.w.y+0.4,s.w.z); gLabels.add(sp);});
+    const pfx=overriddenIds.has(s.sensor_id)?'≈':'';
+    const sp=sprite(has?`${pfx}${val.toFixed(1)}${unit}`:'s/d',cssRgb(rgb),1.5,0.5,16); sp.position.set(s.w.x,s.w.y+0.4,s.w.z); gLabels.add(sp);});
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -893,10 +911,11 @@ function updateUI(act,valid,vMin,vMax,T){
   const list=$('sensor-list'); list.innerHTML='';
   act.forEach((s,i)=>{ const val=snapVals[i],has=val!=null; const rgb=has?valToRgb(val,vMin,vMax):[130,150,160];
     const row=document.createElement('div'); row.className='sensor-row'+(has?'':' stale'); row.dataset.idx=i;
+    const ovr=overriddenIds.has(s.sensor_id);
     row.innerHTML=`<span class="sensor-dot" style="background:${cssRgb(rgb)}"></span>
       <span class="sensor-id">${s.label.replace('Marquesina ','')}</span>
       <span class="sensor-pos">${s.external?'EXT':('L'+(s.line||'?')+'·'+(s.pos||'?'))}</span>
-      <span class="sensor-val">${has?val.toFixed(1)+unit:'s/d'}</span>`;
+      <span class="sensor-val">${has?(ovr?'≈':'')+val.toFixed(1)+unit:'s/d'}</span>`;
     row.addEventListener('click',()=>{document.querySelectorAll('.sensor-row').forEach(r=>r.classList.remove('active'));row.classList.add('active');
       controls.target.set(s.w.x,s.w.y,s.w.z); camera.position.set(s.w.x+4,s.w.y+3,s.w.z-4); controls.update();});
     list.appendChild(row);});
@@ -1000,8 +1019,9 @@ canvas.addEventListener('mousemove',e=>{ const rect=canvas.getBoundingClientRect
     const valid=snapVals.filter(v=>v!=null); const vMin=valid.length?Math.min(...valid):0,vMax=valid.length?Math.max(...valid):1;
     const rgb=ud.has?valToRgb(ud.val,vMin,vMax):[150,170,180];
     tooltip.style.display='block'; tooltip.style.left=(e.clientX-rect.left+14)+'px'; tooltip.style.top=(e.clientY-rect.top-10)+'px';
-    tooltip.innerHTML=`<span style="color:${cssRgb(rgb)};font-weight:700">${s.label} · #${s.sensor_id}</span><br>`+
+    tooltip.innerHTML=`<span style="color:${cssRgb(rgb)};font-weight:700">${s.label} · #${s.sensor_id}${s.external?' · EXT':''}</span><br>`+
       `${METRIC_NAME[currentMetric][0].toUpperCase()+METRIC_NAME[currentMetric].slice(1)}: <strong style="color:#fff">${ud.has?ud.val.toFixed(1)+' '+unit:'sin dato'}</strong><br>`+
+      (overriddenIds.has(s.sensor_id)?`<span style="color:#e0b34a">≈ media de pares (pre-recambio)</span><br>`:'')+
       `x:${s.cm.x} y:${s.cm.y} z:${s.cm.z} cm`;
     canvas.style.cursor='crosshair';
   } else { tooltip.style.display='none'; canvas.style.cursor='grab'; }});

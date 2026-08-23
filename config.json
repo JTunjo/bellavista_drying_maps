@@ -8,7 +8,10 @@
     "La altura (z) puede diferir por sensor dentro de una misma linea.",
     "Sensores EXTERNOS (contraste): agrega \"external\": true a un sensor para ubicarlo FUERA del recinto.",
     "Puedes usar coordenadas negativas (ej. y:-150 = 1.5m frente a FRENTE). Los externos se dibujan como rombo,",
-    "pero NO afectan el campo 3D, la escala de color ni las estadisticas (min/max/prom/σ)."
+    "pero NO afectan el campo 3D, la escala de color ni las estadisticas (min/max/prom/σ).",
+    "Sensor con lectura dudosa antes de recambio: agrega \"replaceBefore\":\"YYYY-MM-DDTHH:MM:SS-05:00\"",
+    "y \"replaceWith\":\"mean\". Solo para VISUALIZACION: en ventanas anteriores a esa fecha, el valor mostrado",
+    "se reemplaza por la media de los demas sensores interiores de la misma metrica (marcado con ≈)."
   ],
   "area": {
     "x": 440,
@@ -27,14 +30,14 @@
       "name": "Ventana E",
       "type": "window",
       "x": 440,
-      "y": 370,
+      "y": 670,
       "z": 220
     },
     {
       "name": "Ventana O",
       "type": "window",
       "x": 440,
-      "y": 930,
+      "y": 1220,
       "z": 220
     }
   ],
@@ -157,7 +160,9 @@
       "pos": 3,
       "x": 355,
       "y": 540,
-      "z": 183
+      "z": 183,
+      "replaceBefore": "2026-08-23T12:00:00-05:00",
+      "replaceWith": "mean"
     },
     {
       "sensor_id": 314,
