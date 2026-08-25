@@ -196,9 +196,12 @@ const CONFIG_PATH = 'config.json';                 // editable layout, same fold
 const MODULE_ID   = 'mod-sec-belvis-marq';         // "marquesina"
 const SQLJS_BASE  = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/';
 
-// Data source: 'api' pulls live per-sensor series from the dashboard endpoint; 'db' reads the
-// bundled SQLite snapshot via sql.js. Flip DATA_SOURCE to switch. API is the primary source.
-const DATA_SOURCE = 'api';
+// Data source: 'proxy' calls your Cloudflare Worker (which logs in and fetches all sensors
+// server-side, returns them with CORS) — refreshes on demand via the Reload button.
+// 'snapshot' reads a static JSON from a GitHub Action; 'api' calls the dashboard directly; 'db' = SQLite.
+const DATA_SOURCE = 'proxy';
+const PROXY_URL = 'https://tunjo-marquesina-proxy.jtunjo.workers.dev';   // <-- set after deploying the Worker
+const SNAPSHOT_PATH = 'data/marquesina.json';       // used only when DATA_SOURCE==='snapshot'
 const API_BASE    = 'https://dashboard.tunjosolutions.co/api/chart/data';
 const API_HOURS   = 1;                              // pull the last clock hour (now-1h .. now)
 const API_CONCURRENCY = 6;                          // parallel requests
@@ -896,7 +899,9 @@ function updateUI(act,valid,vMin,vMax,T){
   $('hdr-dims').innerHTML=`<strong>${W.toFixed(2)}</strong>×<strong>${D.toFixed(2)}</strong>×<strong>${H.toFixed(2)}</strong> m`;
   $('hdr-count').textContent=act.length;
   const src=$('hdr-source');
-  if(META.source==='api'){ src.className='badge live'; src.textContent='API EN VIVO'; }
+  if(META.source==='proxy'){ src.className='badge live'; src.textContent='API (PROXY)'; }
+  else if(META.source==='snapshot'){ src.className='badge live'; src.textContent='SNAPSHOT'; }
+  else if(META.source==='api'){ src.className='badge live'; src.textContent='API EN VIVO'; }
   else if(META.source==='db'){ src.className='badge live'; src.textContent='DB (SNAPSHOT)'; }
   else { src.className='badge demo'; src.textContent='DEMO (SIN DATOS)'; }
   const snapMs = spine.length ? T : null;
@@ -939,7 +944,16 @@ function writeStatus(demoReason){
   const cfgLine = primary
     ? `Layout: <span class="ok">config.json</span> (externa)`
     : `Layout: <span class="bad">incrustada</span> (fallback en HTML)`;
-  if(META.source==='api'){
+  if(META.source==='snapshot' || META.source==='proxy'){
+    const gm=META.generatedAt?new Date(META.generatedAt).getTime():null;
+    const ageMin=gm?Math.max(0,Math.round((Date.now()-gm)/60000)):null;
+    const orig=META.source==='proxy'?'proxy (Cloudflare Worker)':'snapshot (GitHub Action)';
+    const when=META.source==='proxy'?'Consultado':'Generado';
+    el.innerHTML=`Origen: <b>${orig}</b><br>${cfgLine}<br>
+      ${when}: <b>${gm?fmtDate(gm):'—'}</b>${ageMin!=null?` <span class="${ageMin>20?'bad':'ok'}">(hace ${ageMin} min)</span>`:''}<br>
+      Sensores OK: <span class="ok">${META.apiOk||0}</span>${META.apiFail?` · fallidos: <span class="bad">${META.apiFail}</span>`:''}<br>
+      Puntos: <b>${(META.rows||0).toLocaleString('es-CO')}</b> · Ventanas 5 min: <b>${META.windows||0}</b>`;
+  } else if(META.source==='api'){
     el.innerHTML=`Origen: <b>API</b> (${DATA_SOURCE})<br>${cfgLine}<br>Rango: <b>${META.range||'—'}</b><br>
       Sensores OK: <span class="ok">${META.apiOk||0}</span>${META.apiFail?` · fallidos: <span class="bad">${META.apiFail}</span>`:''}<br>
       Puntos: <b>${(META.rows||0).toLocaleString('es-CO')}</b> · Ventanas 5 min: <b>${META.windows||0}</b> (mediana)`;
@@ -968,12 +982,38 @@ async function loadAll(){
   showOverlay('Cargando…','',false);
   CONFIG=await fetchConfig();
   let readingsBySensor, metricFromDb={};
-  if(DATA_SOURCE==='api'){ readingsBySensor=await loadFromAPI(); }
+  if(DATA_SOURCE==='proxy'){ readingsBySensor=await loadFromProxy(); }
+  else if(DATA_SOURCE==='snapshot'){ readingsBySensor=await loadFromSnapshot(); }
+  else if(DATA_SOURCE==='api'){ readingsBySensor=await loadFromAPI(); }
   else { const r=await loadFromDB(); readingsBySensor=r.readingsBySensor; metricFromDb=r.metricFromDb; }
   buildModel(CONFIG,readingsBySensor,metricFromDb);
   if(!SENSORS.length) throw new Error('config.json no define sensores válidos.');
   currentMetric='temp'; setMetricButtons();
   buildStatic(); frameCamera(); applyState(); writeStatus(); hideOverlay();
+}
+
+// ── Combined-JSON sources (snapshot file OR Cloudflare proxy — identical shape) ──
+function ingestCombined(j, source){
+  const readingsBySensor={}; let total=0;
+  for(const [sid,arr] of Object.entries(j.sensors||{})){
+    const a=(arr||[]).map(p=>({t:+p.t,v:+p.v})).filter(p=>isFinite(p.t)&&isFinite(p.v));
+    a.sort((x,y)=>y.t-x.t); readingsBySensor[sid]=a; total+=a.length;
+  }
+  META={rows:total,corrupted:0,mapped:0,source,generatedAt:j.generatedAt,
+        apiOk:j.meta&&j.meta.ok,apiFail:j.meta&&j.meta.fail,range:(j.window?(j.window.start+' → '+j.window.end):'')};
+  return readingsBySensor;
+}
+async function loadFromSnapshot(){
+  showOverlay('Cargando snapshot…','',false);
+  const r=await fetch(SNAPSHOT_PATH,{cache:'no-store'}); if(!r.ok) throw new Error(`No se pudo leer ${SNAPSHOT_PATH} (HTTP ${r.status})`);
+  return ingestCombined(await r.json(),'snapshot');
+}
+async function loadFromProxy(){
+  showOverlay('Consultando sensores…','vía proxy seguro',false);
+  if(!/^https?:\/\//.test(PROXY_URL) || PROXY_URL.includes('REPLACE-WITH-YOUR-WORKER')) throw new Error('PROXY_URL no configurado');
+  const r=await fetch(PROXY_URL,{cache:'no-store'}); if(!r.ok) throw new Error(`Proxy HTTP ${r.status}`);
+  const j=await r.json(); if(j&&j.error) throw new Error('Proxy: '+j.error);
+  return ingestCombined(j,'proxy');
 }
 
 // ── API source ──────────────────────────────────────────────────────────────
@@ -1056,7 +1096,9 @@ function loadDemo(reason){
 async function boot(){ try{ await loadAll(); }
   catch(e){ console.warn('load failed:',e); const onFile=location.protocol==='file:';
     const reason = onFile ? 'Abierto como archivo local (file://): el navegador bloquea las peticiones.'
-                 : (DATA_SOURCE==='api' ? 'No se pudo consultar la API (posible CORS o red). Detalle: '+e.message
+                 : (DATA_SOURCE==='proxy' ? 'No se pudo consultar el proxy (¿PROXY_URL configurado y Worker desplegado?). Detalle: '+e.message
+                 : DATA_SOURCE==='snapshot' ? 'No se pudo leer data/marquesina.json (¿la GitHub Action ya generó el snapshot?). Detalle: '+e.message
+                 : DATA_SOURCE==='api' ? 'No se pudo consultar la API (posible CORS o red). Detalle: '+e.message
                                         : 'Detalle: '+e.message);
     loadDemo(reason); } }
 
