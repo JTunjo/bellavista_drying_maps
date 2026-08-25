@@ -195,6 +195,13 @@ const DB_PATH     = 'datos_sensores.db';
 const CONFIG_PATH = 'config.json';                 // editable layout, same folder
 const MODULE_ID   = 'mod-sec-belvis-marq';         // "marquesina"
 const SQLJS_BASE  = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/';
+
+// Data source: 'api' pulls live per-sensor series from the dashboard endpoint; 'db' reads the
+// bundled SQLite snapshot via sql.js. Flip DATA_SOURCE to switch. API is the primary source.
+const DATA_SOURCE = 'api';
+const API_BASE    = 'https://dashboard.tunjosolutions.co/api/chart/data';
+const API_HOURS   = 1;                              // pull the last clock hour (now-1h .. now)
+const API_CONCURRENCY = 6;                          // parallel requests
 const LOGO_URL    = 'https://raw.githubusercontent.com/JTunjo/asset_hosting/refs/heads/main/Tunjo_h.png';
 
 // Timezone: measure_date is stored as Colombia local wall-clock (UTC-05:00) with no
@@ -888,7 +895,10 @@ function updateUI(act,valid,vMin,vMax,T){
   const {W,H,D}=BOX();
   $('hdr-dims').innerHTML=`<strong>${W.toFixed(2)}</strong>×<strong>${D.toFixed(2)}</strong>×<strong>${H.toFixed(2)}</strong> m`;
   $('hdr-count').textContent=act.length;
-  const src=$('hdr-source'); if(META.source==='db'){src.className='badge live';src.textContent='DB EN VIVO';}else{src.className='badge demo';src.textContent='DEMO (SIN DB)';}
+  const src=$('hdr-source');
+  if(META.source==='api'){ src.className='badge live'; src.textContent='API EN VIVO'; }
+  else if(META.source==='db'){ src.className='badge live'; src.textContent='DB (SNAPSHOT)'; }
+  else { src.className='badge demo'; src.textContent='DEMO (SIN DATOS)'; }
   const snapMs = spine.length ? T : null;
   const winTxt = snapMs!=null ? `${fmtHM(snapMs)}–${fmtHM(snapMs+BUCKET_MS)}` : '—';
   $('hdr-snapshot').textContent=`Ventana: ${fmtDate(snapMs)} (5 min)`;
@@ -929,12 +939,16 @@ function writeStatus(demoReason){
   const cfgLine = primary
     ? `Layout: <span class="ok">config.json</span> (externa)`
     : `Layout: <span class="bad">incrustada</span> (fallback en HTML)`;
-  if(META.source==='db'){ const pct=META.rows?(100*META.corrupted/META.rows).toFixed(1):'0';
+  if(META.source==='api'){
+    el.innerHTML=`Origen: <b>API</b> (${DATA_SOURCE})<br>${cfgLine}<br>Rango: <b>${META.range||'—'}</b><br>
+      Sensores OK: <span class="ok">${META.apiOk||0}</span>${META.apiFail?` · fallidos: <span class="bad">${META.apiFail}</span>`:''}<br>
+      Puntos: <b>${(META.rows||0).toLocaleString('es-CO')}</b> · Ventanas 5 min: <b>${META.windows||0}</b> (mediana)`;
+  } else if(META.source==='db'){ const pct=META.rows?(100*META.corrupted/META.rows).toFixed(1):'0';
     el.innerHTML=`Origen: <b>${DB_PATH}</b> + <b>${CONFIG_PATH}</b><br>${cfgLine}<br>Lecturas: <b>${META.rows.toLocaleString('es-CO')}</b><br>
       Corruptas depuradas: <span class="bad">${META.corrupted}</span> (${pct}%)<br>Sensores ubicados: <span class="ok">${META.mapped}</span><br>Ventanas 5 min: <b>${META.windows||0}</b> (mediana)`;
   } else {
-    el.innerHTML=`<span class="bad">Base de datos no cargada.</span><br>${cfgLine}<br>${demoReason?('<span style="color:#7a96a3">'+demoReason+'</span><br>'):''}
-      Mostrando <b>layout demo</b>.<br>Publica en http (GitHub Pages) para leer <code>${DB_PATH}</code>.`;
+    el.innerHTML=`<span class="bad">Datos no cargados.</span><br>${cfgLine}<br>${demoReason?('<span style="color:#7a96a3">'+demoReason+'</span><br>'):''}
+      Mostrando <b>layout demo</b>.`;
   }
 }
 
@@ -953,14 +967,66 @@ async function fetchConfig(){
 async function loadAll(){
   showOverlay('Cargando…','',false);
   CONFIG=await fetchConfig();
+  let readingsBySensor, metricFromDb={};
+  if(DATA_SOURCE==='api'){ readingsBySensor=await loadFromAPI(); }
+  else { const r=await loadFromDB(); readingsBySensor=r.readingsBySensor; metricFromDb=r.metricFromDb; }
+  buildModel(CONFIG,readingsBySensor,metricFromDb);
+  if(!SENSORS.length) throw new Error('config.json no define sensores válidos.');
+  currentMetric='temp'; setMetricButtons();
+  buildStatic(); frameCamera(); applyState(); writeStatus(); hideOverlay();
+}
+
+// ── API source ──────────────────────────────────────────────────────────────
+function fmtApiDate(ms){ return new Date(ms).toLocaleString('sv-SE',
+  {timeZone:DISPLAY_TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).replace(' ','T').slice(0,16); }
+function parseApiLabel(lbl, yr, startMs){                       // "DD/MM HH:MM" (hora local -05:00)
+  const m=String(lbl).match(/^(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})/); if(!m) return NaN;
+  const mk=y=>Date.parse(`${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}T${m[3].padStart(2,'0')}:${m[4]}:00${TZ_OFFSET}`);
+  let t=mk(yr); if(!isNaN(t)&&t<startMs-86400000) t=mk(yr+1);   // year rollover (Dec->Jan)
+  return t;
+}
+function parseApiSeries(j, metric, yr, startMs){               // -> [{t,v}] DESC
+  if(!Array.isArray(j)||j.length<2||!Array.isArray(j[0])||!Array.isArray(j[1])) return [];
+  const labels=j[0], vals=j[1]; const [lo,hi]=BOUNDS[metric]||[-1e9,1e9]; const out=[];
+  const n=Math.min(labels.length, vals.length);
+  for(let i=0;i<n;i++){ const v=Number(vals[i]); if(!isFinite(v)||v<lo||v>hi) continue;
+    const t=parseApiLabel(labels[i], yr, startMs); if(isNaN(t)) continue; out.push({t,v}); }
+  out.sort((a,b)=>b.t-a.t); return out;
+}
+async function loadFromAPI(){
+  const end=Math.floor(Date.now()/60000)*60000;    // round down to the complete minute
+  const start=end-API_HOURS*3600e3;                // last clock hour
+  const startStr=fmtApiDate(start), endStr=fmtApiDate(end), yr=parseInt(startStr.slice(0,4),10);
+  const list=(CONFIG.sensors||[]); const readingsBySensor={};
+  let done=0, ok=0, fail=0, total=0, idx=0, firstErr='';
+  const setP=()=>{ $('overlay-msg').textContent='Consultando API…'; $('overlay-sub').textContent=`${done}/${list.length} sensores`; };
+  setP();
+  async function worker(){
+    while(idx<list.length){ const s=list[idx++]; const name=s.apiName||apiNameFor(s);
+      try{
+        const url=`${API_BASE}?sensorName=${encodeURIComponent(name)}&startDate=${encodeURIComponent(startStr)}&endDate=${encodeURIComponent(endStr)}`;
+        const r=await fetch(url,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status);
+        const recs=parseApiSeries(await r.json(), s.metric, yr, start);
+        readingsBySensor[s.sensor_id]=recs; total+=recs.length; ok++;
+      }catch(e){ fail++; if(!firstErr) firstErr=String(e.message||e); console.warn('API fail',name,e); }
+      done++; setP();
+    }
+  }
+  await Promise.all(Array.from({length:Math.min(API_CONCURRENCY,list.length||1)}, worker));
+  if(ok===0) throw new Error('API sin datos'+(firstErr?(' ('+firstErr+')'):'')+' — ¿CORS o red?');
+  META={rows:total,corrupted:0,mapped:0,source:'api',apiOk:ok,apiFail:fail,range:startStr+' → '+endStr};
+  return readingsBySensor;
+}
+function apiNameFor(s){ return `${s.metric==='hum'?'Humedad':'Temperatura'} ${s.line}-${s.pos}-${s.sensor_id}`; }
+
+// ── DB source (sql.js) ──────────────────────────────────────────────────────
+async function loadFromDB(){
   const SQL=await initSqlJs({locateFile:f=>SQLJS_BASE+f});
   const resp=await fetch(DB_PATH,{cache:'no-store'}); if(!resp.ok) throw new Error(`No se pudo leer ${DB_PATH} (HTTP ${resp.status})`);
   const db=new SQL.Database(new Uint8Array(await resp.arrayBuffer()));
-
   const meta=db.exec(`SELECT sensor_id,type FROM sensor WHERE module_id='${MODULE_ID}' AND is_active=1`);
   const metricFromDb={}; const typeRe=/^(humedad|temperatura)/i;
   if(meta.length) for(const r of meta[0].values){ const m=String(r[1]||'').trim().match(typeRe); if(m) metricFromDb[r[0]]=m[1].toLowerCase().startsWith('t')?'temp':'hum'; }
-
   const ids=(CONFIG.sensors||[]).map(s=>s.sensor_id);
   const metricById={}; (CONFIG.sensors||[]).forEach(s=>metricById[s.sensor_id]=s.metric||metricFromDb[s.sensor_id]);
   const readingsBySensor={}; let total=0,corrupt=0;
@@ -972,12 +1038,8 @@ async function loadAll(){
       (readingsBySensor[sid]=readingsBySensor[sid]||[]).push({t,v:c.value}); }
   }
   Object.values(readingsBySensor).forEach(a=>a.sort((x,y)=>y.t-x.t)); db.close();
-
   META={rows:total,corrupted:corrupt,mapped:0,source:'db'};
-  buildModel(CONFIG,readingsBySensor,metricFromDb);
-  if(!SENSORS.length) throw new Error('config.json no define sensores válidos.');
-  currentMetric='temp'; setMetricButtons();
-  buildStatic(); frameCamera(); applyState(); writeStatus(); hideOverlay();
+  return {readingsBySensor, metricFromDb};
 }
 
 function loadDemo(reason){
@@ -993,7 +1055,10 @@ function loadDemo(reason){
 
 async function boot(){ try{ await loadAll(); }
   catch(e){ console.warn('load failed:',e); const onFile=location.protocol==='file:';
-    loadDemo(onFile?'Abierto como archivo local (file://): el navegador bloquea la lectura de la DB.':('Detalle: '+e.message)); } }
+    const reason = onFile ? 'Abierto como archivo local (file://): el navegador bloquea las peticiones.'
+                 : (DATA_SOURCE==='api' ? 'No se pudo consultar la API (posible CORS o red). Detalle: '+e.message
+                                        : 'Detalle: '+e.message);
+    loadDemo(reason); } }
 
 // ══════════════════════════════════════════════════════════════════════════
 //  CONTROLS
