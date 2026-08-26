@@ -381,9 +381,9 @@
       "line": 6,
       "pos": 1,
       "external": true,
-      "x": -10,
+      "x": -100,
       "y": 280,
-      "z": 155,
+      "z": 260,
       "apiName": "Humedad 6-1-331"
     },
     {
@@ -393,9 +393,9 @@
       "line": 6,
       "pos": 1,
       "external": true,
-      "x": -10,
+      "x": -100,
       "y": 280,
-      "z": 155,
+      "z": 260,
       "apiName": "Temperatura 6-1-332"
     },
     {
@@ -405,9 +405,9 @@
       "line": 6,
       "pos": 2,
       "external": true,
-      "x": -10,
-      "y": 600,
-      "z": 150,
+      "x": -100,
+      "y": 800,
+      "z": 260,
       "apiName": "Humedad 6-2-333"
     },
     {
@@ -417,9 +417,9 @@
       "line": 6,
       "pos": 2,
       "external": true,
-      "x": -10,
-      "y": 600,
-      "z": 150,
+      "x": -100,
+      "y": 800,
+      "z": 260,
       "apiName": "Temperatura 6-2-334"
     },
     {
@@ -429,9 +429,9 @@
       "line": 6,
       "pos": 3,
       "external": true,
-      "x": -60,
-      "y": 1010,
-      "z": 235,
+      "x": -100,
+      "y": 1340,
+      "z": 210,
       "apiName": "Humedad 6-3-335"
     },
     {
@@ -441,9 +441,9 @@
       "line": 6,
       "pos": 3,
       "external": true,
-      "x": -60,
-      "y": 1010,
-      "z": 235,
+      "x": -100,
+      "y": 1340,
+      "z": 210,
       "apiName": "Temperatura 6-3-336"
     }
   ]
