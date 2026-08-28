@@ -555,7 +555,7 @@ const FALLBACK_CONFIG = {
           "x": 186,
           "y": 781,
           "z": 126,
-          "apiName": "Humedad 1"
+          "apiName": "Humedad 1-339"
         },
         {
           "sensor_id": 340,
@@ -566,7 +566,7 @@ const FALLBACK_CONFIG = {
           "x": 186,
           "y": 781,
           "z": 126,
-          "apiName": "Temperatura 1"
+          "apiName": "Temperatura 1-340"
         },
         {
           "sensor_id": 341,
@@ -577,7 +577,7 @@ const FALLBACK_CONFIG = {
           "x": 186,
           "y": 781,
           "z": 66,
-          "apiName": "Humedad 2"
+          "apiName": "Humedad 2-341"
         },
         {
           "sensor_id": 342,
@@ -588,7 +588,7 @@ const FALLBACK_CONFIG = {
           "x": 186,
           "y": 781,
           "z": 66,
-          "apiName": "Temperatura 2"
+          "apiName": "Temperatura 2-342"
         },
         {
           "sensor_id": 343,
@@ -599,7 +599,7 @@ const FALLBACK_CONFIG = {
           "x": 378,
           "y": 591,
           "z": 196,
-          "apiName": "Humedad 3"
+          "apiName": "Humedad 3-343"
         },
         {
           "sensor_id": 344,
@@ -610,7 +610,7 @@ const FALLBACK_CONFIG = {
           "x": 378,
           "y": 591,
           "z": 196,
-          "apiName": "Temperatura 3"
+          "apiName": "Temperatura 3-344"
         },
         {
           "sensor_id": 345,
@@ -621,7 +621,7 @@ const FALLBACK_CONFIG = {
           "x": 140,
           "y": 436,
           "z": 212,
-          "apiName": "Humedad 4"
+          "apiName": "Humedad 4-345"
         },
         {
           "sensor_id": 346,
@@ -632,7 +632,7 @@ const FALLBACK_CONFIG = {
           "x": 140,
           "y": 436,
           "z": 212,
-          "apiName": "Temperatura 4"
+          "apiName": "Temperatura 4-346"
         },
         {
           "sensor_id": 347,
@@ -643,7 +643,7 @@ const FALLBACK_CONFIG = {
           "x": 83,
           "y": 260,
           "z": 212,
-          "apiName": "Humedad 5"
+          "apiName": "Humedad 5-347"
         },
         {
           "sensor_id": 348,
@@ -654,7 +654,7 @@ const FALLBACK_CONFIG = {
           "x": 83,
           "y": 260,
           "z": 212,
-          "apiName": "Temperatura 5"
+          "apiName": "Temperatura 5-348"
         },
         {
           "sensor_id": 349,
@@ -665,7 +665,7 @@ const FALLBACK_CONFIG = {
           "x": 0,
           "y": 466,
           "z": 197,
-          "apiName": "Humedad 6"
+          "apiName": "Humedad 6-349"
         },
         {
           "sensor_id": 350,
@@ -676,7 +676,7 @@ const FALLBACK_CONFIG = {
           "x": 0,
           "y": 466,
           "z": 197,
-          "apiName": "Temperatura 6"
+          "apiName": "Temperatura 6-350"
         }
       ]
     }
