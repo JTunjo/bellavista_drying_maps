@@ -32,10 +32,12 @@ const TZ_OFFSET_H = -5;   // Colombia has no DST — fixed UTC-5 all year
 // Replace with more precise coordinates any time; the orientation below
 // recalculates automatically. To force a specific bearing instead, set
 // SUN_NORTH_OFFSET_OVERRIDE_DEG to a number (0=N, 90=E, 180=S, 270=O).
-const SUN_FRENTE = { lat: 5.078066, lon: -75.585393 };
-const SUN_ATRAS  = { lat: 5.078166, lon: -75.585503 };
-const SUN_LAT = (SUN_FRENTE.lat + SUN_ATRAS.lat) / 2;
-const SUN_LON = (SUN_FRENTE.lon + SUN_ATRAS.lon) / 2;
+// Per-area sun orientation: set by setActiveArea() from the active area's geo.front/back.
+// To force a specific bearing instead, set SUN_NORTH_OFFSET_OVERRIDE_DEG (0=N,90=E,180=S,270=O).
+let SUN_FRENTE = null;
+let SUN_ATRAS  = null;
+let SUN_LAT = 0;
+let SUN_LON = 0;
 const SUN_NORTH_OFFSET_OVERRIDE_DEG = null;
 
 // Cleaning bounds + metric metadata
@@ -52,451 +54,631 @@ const toWorld = p => ({ x: cm(p.x), y: cm(p.z), z: cm(p.y) });
 // Fallback layout used only if config.json can't be fetched (e.g. file://).
 const FALLBACK_CONFIG = {
   "_readme": [
-    "Coordenadas en CENTIMETROS, medidas desde la esquina INFERIOR-IZQUIERDA-FRONTAL (0,0,0).",
-    "x = ancho (izquierda->derecha) | y = profundidad (frente->fondo) | z = altura (piso->techo).",
-    "Ej: area x:440,y:1700,z:230 => 4.40m ancho, 17m profundidad, 2.30m alto.",
-    "Ej: sensor x:210,y:125,z:110 => 1.25m adentro, 1.10m de altura, a 2.10m del muro izquierdo.",
-    "Las posiciones de los sensores aqui son PLACEHOLDERS: reemplazalas con tus medidas reales.",
-    "La altura (z) puede diferir por sensor dentro de una misma linea.",
-    "Sensores EXTERNOS (contraste): agrega \"external\": true a un sensor para ubicarlo FUERA del recinto.",
-    "Puedes usar coordenadas negativas (ej. y:-150 = 1.5m frente a FRENTE). Los externos se dibujan como rombo,",
-    "pero NO afectan el campo 3D, la escala de color ni las estadisticas (min/max/prom/σ).",
-    "Sensor con lectura dudosa antes de recambio: agrega \"replaceBefore\":\"YYYY-MM-DDTHH:MM:SS-05:00\"",
-    "y \"replaceWith\":\"mean\". Solo para VISUALIZACION: en ventanas anteriores a esa fecha, el valor mostrado",
-    "se reemplaza por la media de los demas sensores interiores de la misma metrica (marcado con ≈)."
+    "Multi-area. Cada objeto en 'areas' es un recinto independiente con sus medidas, geo, features y sensores.",
+    "El selector del encabezado elige el area activa; orden por min(sensor_id).",
+    "Coordenadas en CENTIMETROS desde la esquina INFERIOR-IZQUIERDA-FRONTAL (0,0,0).",
+    "x=ancho(izq->der) | y=profundidad(frente->fondo) | z=altura(piso->techo).",
+    "area.geo.front = GPS en y=0 (FRENTE); area.geo.back = GPS en y=max (ATRAS). Orientan el sol (solo se usa el rumbo).",
+    "sensor_id unico en TODAS las areas. apiName = nombre exacto que espera la API.",
+    "external:true: sensor fuera, no afecta campo/escala/estadisticas. replaceBefore/replaceWith: sustitucion visual."
   ],
-  "area": {
-    "x": 440,
-    "y": 1700,
-    "z": 230
-  },
-  "features": [
+  "areas": [
     {
-      "name": "Puerta",
-      "type": "door",
-      "x": 0,
-      "y": 20,
-      "z": 50
+      "id": "marquesina",
+      "name": "Marquesina",
+      "area": {
+        "x": 440,
+        "y": 1700,
+        "z": 230
+      },
+      "geo": {
+        "front": {
+          "lat": 5.078066,
+          "lon": -75.585393
+        },
+        "back": {
+          "lat": 5.078166,
+          "lon": -75.585503
+        }
+      },
+      "features": [
+        {
+          "name": "Puerta",
+          "type": "door",
+          "x": 0,
+          "y": 20,
+          "z": 50
+        },
+        {
+          "name": "Ventana E",
+          "type": "window",
+          "x": 440,
+          "y": 410,
+          "z": 220
+        },
+        {
+          "name": "Ventana O",
+          "type": "window",
+          "x": 440,
+          "y": 1220,
+          "z": 220
+        }
+      ],
+      "sensors": [
+        {
+          "sensor_id": 302,
+          "metric": "temp",
+          "label": "Marquesina T1",
+          "line": 1,
+          "pos": 1,
+          "x": 70,
+          "y": 280,
+          "z": 113,
+          "apiName": "Temperatura 1-1-302"
+        },
+        {
+          "sensor_id": 301,
+          "metric": "hum",
+          "label": "Marquesina H1",
+          "line": 1,
+          "pos": 1,
+          "x": 70,
+          "y": 280,
+          "z": 113,
+          "apiName": "Humedad 1-1-301"
+        },
+        {
+          "sensor_id": 304,
+          "metric": "temp",
+          "label": "Marquesina T2",
+          "line": 1,
+          "pos": 2,
+          "x": 204,
+          "y": 280,
+          "z": 178,
+          "apiName": "Temperatura 1-2-304"
+        },
+        {
+          "sensor_id": 303,
+          "metric": "hum",
+          "label": "Marquesina H2",
+          "line": 1,
+          "pos": 2,
+          "x": 204,
+          "y": 280,
+          "z": 178,
+          "apiName": "Humedad 1-2-303"
+        },
+        {
+          "sensor_id": 306,
+          "metric": "temp",
+          "label": "Marquesina T3",
+          "line": 1,
+          "pos": 3,
+          "x": 355,
+          "y": 280,
+          "z": 118,
+          "apiName": "Temperatura 1-3-306"
+        },
+        {
+          "sensor_id": 305,
+          "metric": "hum",
+          "label": "Marquesina H3",
+          "line": 1,
+          "pos": 3,
+          "x": 355,
+          "y": 280,
+          "z": 118,
+          "apiName": "Humedad 1-3-305"
+        },
+        {
+          "sensor_id": 308,
+          "metric": "temp",
+          "label": "Marquesina T4",
+          "line": 2,
+          "pos": 1,
+          "x": 70,
+          "y": 540,
+          "z": 215,
+          "apiName": "Temperatura 2-1-308"
+        },
+        {
+          "sensor_id": 307,
+          "metric": "hum",
+          "label": "Marquesina H4",
+          "line": 2,
+          "pos": 1,
+          "x": 70,
+          "y": 540,
+          "z": 215,
+          "apiName": "Humedad 2-1-307"
+        },
+        {
+          "sensor_id": 310,
+          "metric": "temp",
+          "label": "Marquesina T5",
+          "line": 2,
+          "pos": 2,
+          "x": 204,
+          "y": 540,
+          "z": 124,
+          "apiName": "Temperatura 2-2-310"
+        },
+        {
+          "sensor_id": 309,
+          "metric": "hum",
+          "label": "Marquesina H5",
+          "line": 2,
+          "pos": 2,
+          "x": 204,
+          "y": 540,
+          "z": 124,
+          "apiName": "Humedad 2-2-309"
+        },
+        {
+          "sensor_id": 312,
+          "metric": "temp",
+          "label": "Marquesina T6",
+          "line": 2,
+          "pos": 3,
+          "x": 355,
+          "y": 540,
+          "z": 183,
+          "apiName": "Temperatura 2-3-312"
+        },
+        {
+          "sensor_id": 311,
+          "metric": "hum",
+          "label": "Marquesina H6",
+          "line": 2,
+          "pos": 3,
+          "x": 355,
+          "y": 540,
+          "z": 183,
+          "replaceBefore": "2026-08-23T12:00:00-05:00",
+          "replaceWith": "mean",
+          "apiName": "Humedad 2-3-311"
+        },
+        {
+          "sensor_id": 314,
+          "metric": "temp",
+          "label": "Marquesina T7",
+          "line": 3,
+          "pos": 1,
+          "x": 70,
+          "y": 800,
+          "z": 118,
+          "apiName": "Temperatura 3-1-314"
+        },
+        {
+          "sensor_id": 313,
+          "metric": "hum",
+          "label": "Marquesina H7",
+          "line": 3,
+          "pos": 1,
+          "x": 70,
+          "y": 800,
+          "z": 118,
+          "apiName": "Humedad 3-1-313"
+        },
+        {
+          "sensor_id": 316,
+          "metric": "temp",
+          "label": "Marquesina T8",
+          "line": 3,
+          "pos": 2,
+          "x": 204,
+          "y": 800,
+          "z": 177,
+          "apiName": "Temperatura 3-2-316"
+        },
+        {
+          "sensor_id": 315,
+          "metric": "hum",
+          "label": "Marquesina H8",
+          "line": 3,
+          "pos": 2,
+          "x": 204,
+          "y": 800,
+          "z": 177,
+          "apiName": "Humedad 3-2-315"
+        },
+        {
+          "sensor_id": 318,
+          "metric": "temp",
+          "label": "Marquesina T9",
+          "line": 3,
+          "pos": 3,
+          "x": 355,
+          "y": 800,
+          "z": 126,
+          "apiName": "Temperatura 3-3-318"
+        },
+        {
+          "sensor_id": 317,
+          "metric": "hum",
+          "label": "Marquesina H9",
+          "line": 3,
+          "pos": 3,
+          "x": 355,
+          "y": 800,
+          "z": 126,
+          "apiName": "Humedad 3-3-317"
+        },
+        {
+          "sensor_id": 320,
+          "metric": "temp",
+          "label": "Marquesina T10",
+          "line": 4,
+          "pos": 1,
+          "x": 70,
+          "y": 1100,
+          "z": 195,
+          "apiName": "Temperatura 4-1-320"
+        },
+        {
+          "sensor_id": 319,
+          "metric": "hum",
+          "label": "Marquesina H10",
+          "line": 4,
+          "pos": 1,
+          "x": 70,
+          "y": 1100,
+          "z": 195,
+          "apiName": "Humedad 4-1-319"
+        },
+        {
+          "sensor_id": 322,
+          "metric": "temp",
+          "label": "Marquesina T11",
+          "line": 4,
+          "pos": 2,
+          "x": 204,
+          "y": 1100,
+          "z": 117,
+          "apiName": "Temperatura 4-2-322"
+        },
+        {
+          "sensor_id": 321,
+          "metric": "hum",
+          "label": "Marquesina H11",
+          "line": 4,
+          "pos": 2,
+          "x": 204,
+          "y": 1100,
+          "z": 117,
+          "apiName": "Humedad 4-2-321"
+        },
+        {
+          "sensor_id": 324,
+          "metric": "temp",
+          "label": "Marquesina T12",
+          "line": 4,
+          "pos": 3,
+          "x": 355,
+          "y": 1100,
+          "z": 177,
+          "apiName": "Temperatura 4-3-324"
+        },
+        {
+          "sensor_id": 323,
+          "metric": "hum",
+          "label": "Marquesina H12",
+          "line": 4,
+          "pos": 3,
+          "x": 355,
+          "y": 1100,
+          "z": 177,
+          "apiName": "Humedad 4-3-323"
+        },
+        {
+          "sensor_id": 326,
+          "metric": "temp",
+          "label": "Marquesina T13",
+          "line": 5,
+          "pos": 1,
+          "x": 70,
+          "y": 1340,
+          "z": 119,
+          "apiName": "Temperatura  5-1-326"
+        },
+        {
+          "sensor_id": 325,
+          "metric": "hum",
+          "label": "Marquesina H13",
+          "line": 5,
+          "pos": 1,
+          "x": 70,
+          "y": 1340,
+          "z": 119,
+          "apiName": "Humedad 5-1-325"
+        },
+        {
+          "sensor_id": 328,
+          "metric": "temp",
+          "label": "Marquesina T14",
+          "line": 5,
+          "pos": 2,
+          "x": 204,
+          "y": 1340,
+          "z": 197,
+          "apiName": "Temperatura 5-2-328"
+        },
+        {
+          "sensor_id": 327,
+          "metric": "hum",
+          "label": "Marquesina H14",
+          "line": 5,
+          "pos": 2,
+          "x": 204,
+          "y": 1340,
+          "z": 197,
+          "apiName": "Humedad  5-2-327"
+        },
+        {
+          "sensor_id": 330,
+          "metric": "temp",
+          "label": "Marquesina T15",
+          "line": 5,
+          "pos": 3,
+          "x": 355,
+          "y": 1340,
+          "z": 145,
+          "apiName": "Temperatura 5-3-330"
+        },
+        {
+          "sensor_id": 329,
+          "metric": "hum",
+          "label": "Marquesina H15",
+          "line": 5,
+          "pos": 3,
+          "x": 355,
+          "y": 1340,
+          "z": 145,
+          "apiName": "Humedad 5-3-329"
+        },
+        {
+          "sensor_id": 331,
+          "metric": "hum",
+          "label": "Marquesina H16",
+          "line": 6,
+          "pos": 1,
+          "external": true,
+          "x": -100,
+          "y": 280,
+          "z": 260,
+          "apiName": "Humedad 6-1-331"
+        },
+        {
+          "sensor_id": 332,
+          "metric": "temp",
+          "label": "Marquesina T16",
+          "line": 6,
+          "pos": 1,
+          "external": true,
+          "x": -100,
+          "y": 280,
+          "z": 260,
+          "apiName": "Temperatura 6-1-332"
+        },
+        {
+          "sensor_id": 333,
+          "metric": "hum",
+          "label": "Marquesina H17",
+          "line": 6,
+          "pos": 2,
+          "external": true,
+          "x": -100,
+          "y": 800,
+          "z": 260,
+          "apiName": "Humedad 6-2-333"
+        },
+        {
+          "sensor_id": 334,
+          "metric": "temp",
+          "label": "Marquesina T17",
+          "line": 6,
+          "pos": 2,
+          "external": true,
+          "x": -100,
+          "y": 800,
+          "z": 260,
+          "apiName": "Temperatura 6-2-334"
+        },
+        {
+          "sensor_id": 335,
+          "metric": "hum",
+          "label": "Marquesina H18",
+          "line": 6,
+          "pos": 3,
+          "external": true,
+          "x": -100,
+          "y": 1340,
+          "z": 210,
+          "apiName": "Humedad 6-3-335"
+        },
+        {
+          "sensor_id": 336,
+          "metric": "temp",
+          "label": "Marquesina T18",
+          "line": 6,
+          "pos": 3,
+          "external": true,
+          "x": -100,
+          "y": 1340,
+          "z": 210,
+          "apiName": "Temperatura 6-3-336"
+        }
+      ]
     },
     {
-      "name": "Ventana E",
-      "type": "window",
-      "x": 440,
-      "y": 410,
-      "z": 220
-    },
-    {
-      "name": "Ventana O",
-      "type": "window",
-      "x": 440,
-      "y": 1220,
-      "z": 220
-    }
-  ],
-  "sensors": [
-    {
-      "sensor_id": 302,
-      "metric": "temp",
-      "label": "Marquesina T1",
-      "line": 1,
-      "pos": 1,
-      "x": 70,
-      "y": 280,
-      "z": 113,
-      "apiName": "Temperatura 1-1-302"
-    },
-    {
-      "sensor_id": 301,
-      "metric": "hum",
-      "label": "Marquesina H1",
-      "line": 1,
-      "pos": 1,
-      "x": 70,
-      "y": 280,
-      "z": 113,
-      "apiName": "Humedad 1-1-301"
-    },
-    {
-      "sensor_id": 304,
-      "metric": "temp",
-      "label": "Marquesina T2",
-      "line": 1,
-      "pos": 2,
-      "x": 204,
-      "y": 280,
-      "z": 178,
-      "apiName": "Temperatura 1-2-304"
-    },
-    {
-      "sensor_id": 303,
-      "metric": "hum",
-      "label": "Marquesina H2",
-      "line": 1,
-      "pos": 2,
-      "x": 204,
-      "y": 280,
-      "z": 178,
-      "apiName": "Humedad 1-2-303"
-    },
-    {
-      "sensor_id": 306,
-      "metric": "temp",
-      "label": "Marquesina T3",
-      "line": 1,
-      "pos": 3,
-      "x": 355,
-      "y": 280,
-      "z": 118,
-      "apiName": "Temperatura 1-3-306"
-    },
-    {
-      "sensor_id": 305,
-      "metric": "hum",
-      "label": "Marquesina H3",
-      "line": 1,
-      "pos": 3,
-      "x": 355,
-      "y": 280,
-      "z": 118,
-      "apiName": "Humedad 1-3-305"
-    },
-    {
-      "sensor_id": 308,
-      "metric": "temp",
-      "label": "Marquesina T4",
-      "line": 2,
-      "pos": 1,
-      "x": 70,
-      "y": 540,
-      "z": 215,
-      "apiName": "Temperatura 2-1-308"
-    },
-    {
-      "sensor_id": 307,
-      "metric": "hum",
-      "label": "Marquesina H4",
-      "line": 2,
-      "pos": 1,
-      "x": 70,
-      "y": 540,
-      "z": 215,
-      "apiName": "Humedad 2-1-307"
-    },
-    {
-      "sensor_id": 310,
-      "metric": "temp",
-      "label": "Marquesina T5",
-      "line": 2,
-      "pos": 2,
-      "x": 204,
-      "y": 540,
-      "z": 124,
-      "apiName": "Temperatura 2-2-310"
-    },
-    {
-      "sensor_id": 309,
-      "metric": "hum",
-      "label": "Marquesina H5",
-      "line": 2,
-      "pos": 2,
-      "x": 204,
-      "y": 540,
-      "z": 124,
-      "apiName": "Humedad 2-2-309"
-    },
-    {
-      "sensor_id": 312,
-      "metric": "temp",
-      "label": "Marquesina T6",
-      "line": 2,
-      "pos": 3,
-      "x": 355,
-      "y": 540,
-      "z": 183,
-      "apiName": "Temperatura 2-3-312"
-    },
-    {
-      "sensor_id": 311,
-      "metric": "hum",
-      "label": "Marquesina H6",
-      "line": 2,
-      "pos": 3,
-      "x": 355,
-      "y": 540,
-      "z": 183,
-      "replaceBefore": "2026-08-23T12:00:00-05:00",
-      "replaceWith": "mean",
-      "apiName": "Humedad 2-3-311"
-    },
-    {
-      "sensor_id": 314,
-      "metric": "temp",
-      "label": "Marquesina T7",
-      "line": 3,
-      "pos": 1,
-      "x": 70,
-      "y": 800,
-      "z": 118,
-      "apiName": "Temperatura 3-1-314"
-    },
-    {
-      "sensor_id": 313,
-      "metric": "hum",
-      "label": "Marquesina H7",
-      "line": 3,
-      "pos": 1,
-      "x": 70,
-      "y": 800,
-      "z": 118,
-      "apiName": "Humedad 3-1-313"
-    },
-    {
-      "sensor_id": 316,
-      "metric": "temp",
-      "label": "Marquesina T8",
-      "line": 3,
-      "pos": 2,
-      "x": 204,
-      "y": 800,
-      "z": 177,
-      "apiName": "Temperatura 3-2-316"
-    },
-    {
-      "sensor_id": 315,
-      "metric": "hum",
-      "label": "Marquesina H8",
-      "line": 3,
-      "pos": 2,
-      "x": 204,
-      "y": 800,
-      "z": 177,
-      "apiName": "Humedad 3-2-315"
-    },
-    {
-      "sensor_id": 318,
-      "metric": "temp",
-      "label": "Marquesina T9",
-      "line": 3,
-      "pos": 3,
-      "x": 355,
-      "y": 800,
-      "z": 126,
-      "apiName": "Temperatura 3-3-318"
-    },
-    {
-      "sensor_id": 317,
-      "metric": "hum",
-      "label": "Marquesina H9",
-      "line": 3,
-      "pos": 3,
-      "x": 355,
-      "y": 800,
-      "z": 126,
-      "apiName": "Humedad 3-3-317"
-    },
-    {
-      "sensor_id": 320,
-      "metric": "temp",
-      "label": "Marquesina T10",
-      "line": 4,
-      "pos": 1,
-      "x": 70,
-      "y": 1100,
-      "z": 195,
-      "apiName": "Temperatura 4-1-320"
-    },
-    {
-      "sensor_id": 319,
-      "metric": "hum",
-      "label": "Marquesina H10",
-      "line": 4,
-      "pos": 1,
-      "x": 70,
-      "y": 1100,
-      "z": 195,
-      "apiName": "Humedad 4-1-319"
-    },
-    {
-      "sensor_id": 322,
-      "metric": "temp",
-      "label": "Marquesina T11",
-      "line": 4,
-      "pos": 2,
-      "x": 204,
-      "y": 1100,
-      "z": 117,
-      "apiName": "Temperatura 4-2-322"
-    },
-    {
-      "sensor_id": 321,
-      "metric": "hum",
-      "label": "Marquesina H11",
-      "line": 4,
-      "pos": 2,
-      "x": 204,
-      "y": 1100,
-      "z": 117,
-      "apiName": "Humedad 4-2-321"
-    },
-    {
-      "sensor_id": 324,
-      "metric": "temp",
-      "label": "Marquesina T12",
-      "line": 4,
-      "pos": 3,
-      "x": 355,
-      "y": 1100,
-      "z": 177,
-      "apiName": "Temperatura 4-3-324"
-    },
-    {
-      "sensor_id": 323,
-      "metric": "hum",
-      "label": "Marquesina H12",
-      "line": 4,
-      "pos": 3,
-      "x": 355,
-      "y": 1100,
-      "z": 177,
-      "apiName": "Humedad 4-3-323"
-    },
-    {
-      "sensor_id": 326,
-      "metric": "temp",
-      "label": "Marquesina T13",
-      "line": 5,
-      "pos": 1,
-      "x": 70,
-      "y": 1340,
-      "z": 119,
-      "apiName": "Temperatura  5-1-326"
-    },
-    {
-      "sensor_id": 325,
-      "metric": "hum",
-      "label": "Marquesina H13",
-      "line": 5,
-      "pos": 1,
-      "x": 70,
-      "y": 1340,
-      "z": 119,
-      "apiName": "Humedad 5-1-325"
-    },
-    {
-      "sensor_id": 328,
-      "metric": "temp",
-      "label": "Marquesina T14",
-      "line": 5,
-      "pos": 2,
-      "x": 204,
-      "y": 1340,
-      "z": 197,
-      "apiName": "Temperatura 5-2-328"
-    },
-    {
-      "sensor_id": 327,
-      "metric": "hum",
-      "label": "Marquesina H14",
-      "line": 5,
-      "pos": 2,
-      "x": 204,
-      "y": 1340,
-      "z": 197,
-      "apiName": "Humedad  5-2-327"
-    },
-    {
-      "sensor_id": 330,
-      "metric": "temp",
-      "label": "Marquesina T15",
-      "line": 5,
-      "pos": 3,
-      "x": 355,
-      "y": 1340,
-      "z": 145,
-      "apiName": "Temperatura 5-3-330"
-    },
-    {
-      "sensor_id": 329,
-      "metric": "hum",
-      "label": "Marquesina H15",
-      "line": 5,
-      "pos": 3,
-      "x": 355,
-      "y": 1340,
-      "z": 145,
-      "apiName": "Humedad 5-3-329"
-    },
-    {
-      "sensor_id": 331,
-      "metric": "hum",
-      "label": "Marquesina H16",
-      "line": 6,
-      "pos": 1,
-      "external": true,
-      "x": -100,
-      "y": 280,
-      "z": 260,
-      "apiName": "Humedad 6-1-331"
-    },
-    {
-      "sensor_id": 332,
-      "metric": "temp",
-      "label": "Marquesina T16",
-      "line": 6,
-      "pos": 1,
-      "external": true,
-      "x": -100,
-      "y": 280,
-      "z": 260,
-      "apiName": "Temperatura 6-1-332"
-    },
-    {
-      "sensor_id": 333,
-      "metric": "hum",
-      "label": "Marquesina H17",
-      "line": 6,
-      "pos": 2,
-      "external": true,
-      "x": -100,
-      "y": 800,
-      "z": 260,
-      "apiName": "Humedad 6-2-333"
-    },
-    {
-      "sensor_id": 334,
-      "metric": "temp",
-      "label": "Marquesina T17",
-      "line": 6,
-      "pos": 2,
-      "external": true,
-      "x": -100,
-      "y": 800,
-      "z": 260,
-      "apiName": "Temperatura 6-2-334"
-    },
-    {
-      "sensor_id": 335,
-      "metric": "hum",
-      "label": "Marquesina H18",
-      "line": 6,
-      "pos": 3,
-      "external": true,
-      "x": -100,
-      "y": 1340,
-      "z": 210,
-      "apiName": "Humedad 6-3-335"
-    },
-    {
-      "sensor_id": 336,
-      "metric": "temp",
-      "label": "Marquesina T18",
-      "line": 6,
-      "pos": 3,
-      "external": true,
-      "x": -100,
-      "y": 1340,
-      "z": 210,
-      "apiName": "Temperatura 6-3-336"
+      "id": "bodega",
+      "name": "Bodega",
+      "area": {
+        "x": 378,
+        "y": 980,
+        "z": 212
+      },
+      "geo": {
+        "front": {
+          "lat": 5.07805,
+          "lon": -75.585389
+        },
+        "back": {
+          "lat": 5.078109,
+          "lon": -75.585454
+        }
+      },
+      "features": [
+        {
+          "name": "Puerta",
+          "type": "door",
+          "x": 378,
+          "y": 30,
+          "z": 120
+        },
+        {
+          "name": "Ventana",
+          "type": "window",
+          "x": 378,
+          "y": 640,
+          "z": 160
+        }
+      ],
+      "sensors": [
+        {
+          "sensor_id": 339,
+          "metric": "hum",
+          "label": "Bodega H1",
+          "line": 1,
+          "pos": 1,
+          "x": 186,
+          "y": 781,
+          "z": 126,
+          "apiName": "Humedad 1"
+        },
+        {
+          "sensor_id": 340,
+          "metric": "temp",
+          "label": "Bodega T1",
+          "line": 1,
+          "pos": 1,
+          "x": 186,
+          "y": 781,
+          "z": 126,
+          "apiName": "Temperatura 1"
+        },
+        {
+          "sensor_id": 341,
+          "metric": "hum",
+          "label": "Bodega H2",
+          "line": 1,
+          "pos": 2,
+          "x": 186,
+          "y": 781,
+          "z": 66,
+          "apiName": "Humedad 2"
+        },
+        {
+          "sensor_id": 342,
+          "metric": "temp",
+          "label": "Bodega T2",
+          "line": 1,
+          "pos": 2,
+          "x": 186,
+          "y": 781,
+          "z": 66,
+          "apiName": "Temperatura 2"
+        },
+        {
+          "sensor_id": 343,
+          "metric": "hum",
+          "label": "Bodega H3",
+          "line": 1,
+          "pos": 3,
+          "x": 378,
+          "y": 591,
+          "z": 196,
+          "apiName": "Humedad 3"
+        },
+        {
+          "sensor_id": 344,
+          "metric": "temp",
+          "label": "Bodega T3",
+          "line": 1,
+          "pos": 3,
+          "x": 378,
+          "y": 591,
+          "z": 196,
+          "apiName": "Temperatura 3"
+        },
+        {
+          "sensor_id": 345,
+          "metric": "hum",
+          "label": "Bodega H4",
+          "line": 1,
+          "pos": 4,
+          "x": 140,
+          "y": 436,
+          "z": 212,
+          "apiName": "Humedad 4"
+        },
+        {
+          "sensor_id": 346,
+          "metric": "temp",
+          "label": "Bodega T4",
+          "line": 1,
+          "pos": 4,
+          "x": 140,
+          "y": 436,
+          "z": 212,
+          "apiName": "Temperatura 4"
+        },
+        {
+          "sensor_id": 347,
+          "metric": "hum",
+          "label": "Bodega H5",
+          "line": 1,
+          "pos": 5,
+          "x": 83,
+          "y": 260,
+          "z": 212,
+          "apiName": "Humedad 5"
+        },
+        {
+          "sensor_id": 348,
+          "metric": "temp",
+          "label": "Bodega T5",
+          "line": 1,
+          "pos": 5,
+          "x": 83,
+          "y": 260,
+          "z": 212,
+          "apiName": "Temperatura 5"
+        },
+        {
+          "sensor_id": 349,
+          "metric": "hum",
+          "label": "Bodega H6",
+          "line": 1,
+          "pos": 6,
+          "x": 0,
+          "y": 466,
+          "z": 197,
+          "apiName": "Humedad 6"
+        },
+        {
+          "sensor_id": 350,
+          "metric": "temp",
+          "label": "Bodega T6",
+          "line": 1,
+          "pos": 6,
+          "x": 0,
+          "y": 466,
+          "z": 197,
+          "apiName": "Temperatura 6"
+        }
+      ]
     }
   ]
 };
@@ -576,6 +758,9 @@ function cleanValue(raw, metric){
 //  MODEL
 // ══════════════════════════════════════════════════════════════════════════
 let CONFIG=null;
+let AREA=null;                          // active area object
+let AREAS=[];                           // all areas, ordered by min(sensor_id)
+let LAST_READINGS=null;                 // last fetched readingsBySensor (all areas) — reused when switching area
 let CONFIG_SOURCE='fallback';           // 'primary' = external config.json, 'fallback' = embedded copy
 let SENSORS=[];                         // [{sensor_id,metric,label,cm:{x,y,z},w:{x,y,z},series[]}]
 let META={rows:0,corrupted:0,mapped:0,source:'demo'};
@@ -650,7 +835,25 @@ const gSunCompass=new THREE.Group(); gSun.add(gSunCompass);
 scene.add(gBox,gAxis,gFeat,gVol,gPts,gLabels,gSun);
 let volOpacity=0.40, ptsSizeFactor=1.0, fieldFn=null, snapVals=[], overriddenIds=new Set();
 
-function BOX(){ const a=CONFIG.area; return { W:cm(a.x), H:cm(a.z), D:cm(a.y) }; } // W=width(X) H=height(Y) D=depth(Z)
+function BOX(){ const a=AREA.area; return { W:cm(a.x), H:cm(a.z), D:cm(a.y) }; } // W=width(X) H=height(Y) D=depth(Z)
+
+// ── Areas: normalize config, order, and activate ────────────────────────────
+function normalizeAreas(cfg){
+  if(cfg && Array.isArray(cfg.areas) && cfg.areas.length) return cfg.areas.slice();
+  // back-compat: a single-area config (area/sensors at top) -> wrap as one area
+  if(cfg && cfg.sensors) return [{id:'area',name:cfg.name||'Área',area:cfg.area,geo:cfg.geo,features:cfg.features,sensors:cfg.sensors}];
+  return [];
+}
+function areaMinId(a){ return Math.min.apply(null,(a.sensors||[]).map(s=>s.sensor_id).concat([Infinity])); }
+function setActiveArea(area){
+  AREA=area;
+  const g=area&&area.geo||{}; SUN_FRENTE=g.front||null; SUN_ATRAS=g.back||null;
+  if(SUN_FRENTE&&SUN_ATRAS){
+    SUN_LAT=(SUN_FRENTE.lat+SUN_ATRAS.lat)/2; SUN_LON=(SUN_FRENTE.lon+SUN_ATRAS.lon)/2;
+    SUN_NORTH_OFFSET_DEG = SUN_NORTH_OFFSET_OVERRIDE_DEG!=null ? SUN_NORTH_OFFSET_OVERRIDE_DEG
+      : bearingDeg(SUN_FRENTE.lat,SUN_FRENTE.lon,SUN_ATRAS.lat,SUN_ATRAS.lon);
+  } else { SUN_LAT=0; SUN_LON=0; }
+}
 
 function frameCamera(){ const {W,H,D}=BOX(); const cx=W/2,cy=H/2,cz=D/2; const maxd=Math.max(W,H,D);
   controls.target.set(cx,cy,cz); camera.position.set(cx+W*0.6+maxd*0.15, H+maxd*0.28, -(maxd*0.55)); camera.lookAt(cx,cy,cz); controls.update(); }
@@ -675,7 +878,7 @@ function buildStatic(){
   const grid=new THREE.GridHelper(Math.max(W,D),Math.round(Math.max(W,D)),0x14202a,0x14202a); grid.position.set(W/2,0,D/2); gBox.add(grid);
   tag('FRENTE',W/2,0.25,0,'#7fd6ef'); tag('ATRÁS',W/2,0.25,D,'#7a96a3');
   tag('DER.',0,0.25,D/2,'#7a96a3');   tag('IZQ.',W,0.25,D/2,'#7a96a3');
-  (CONFIG.features||[]).forEach(f=>{
+  (AREA.features||[]).forEach(f=>{
     const w=toWorld(f); const isDoor=(f.type==='door'); const col=isDoor?0xc1663a:0x3fa7c9;
     const three=new THREE.Color(col);
     const dot=new THREE.Mesh(new THREE.SphereGeometry(0.18,16,16),
@@ -699,9 +902,8 @@ function bearingDeg(lat1,lon1,lat2,lon2){
   const x=Math.cos(phi1)*Math.sin(phi2)-Math.sin(phi1)*Math.cos(phi2)*Math.cos(dLon);
   return (Math.atan2(y,x)*180/Math.PI+360)%360;
 }
-// Compass bearing that world +Z ("hacia ATRÁS") points at.
-const SUN_NORTH_OFFSET_DEG = SUN_NORTH_OFFSET_OVERRIDE_DEG!=null ? SUN_NORTH_OFFSET_OVERRIDE_DEG
-  : bearingDeg(SUN_FRENTE.lat,SUN_FRENTE.lon,SUN_ATRAS.lat,SUN_ATRAS.lon);
+// Compass bearing that world +Z ("hacia ATRÁS") points at — set per active area.
+let SUN_NORTH_OFFSET_DEG = 0;
 
 // Horizontal unit direction (world XZ) for a given compass bearing, using the offset above.
 function sunWorldDir(bearing){
@@ -801,7 +1003,7 @@ function skyPalette(alt, morning){
   return ks[ks.length-1];
 }
 function updateSky(T){
-  if(typeof SunCalc==='undefined' || typeof SUN_LAT==='undefined') return;
+  if(typeof SunCalc==='undefined' || !SUN_FRENTE) return;
   const t = isFinite(T)?T:Date.now();
   const alt = SunCalc.getPosition(new Date(t), SUN_LAT, SUN_LON).altitude*180/Math.PI;
   let morning=true;
@@ -812,7 +1014,7 @@ function updateSky(T){
     `linear-gradient(to bottom, ${pal.top} 0px, ${pal.mid} ${mid}px, ${pal.hor} ${sky-h}px, ${SKY_BLACK} ${sky+h}px, ${SKY_BLACK} 100%)`;
 }
 function updateSun(T){
-  if(!gSun.visible || !isFinite(T) || typeof SunCalc==='undefined') return;
+  if(!gSun.visible || !isFinite(T) || typeof SunCalc==='undefined' || !SUN_FRENTE) return;
   const radius=sunRadius(), center=sunCenter();
   const dayKey=bogotaMidnightMs(T);
   if(dayKey!==sunPathDayKey){
@@ -977,7 +1179,7 @@ function updateUI(act,valid,vMin,vMax,T){
     const row=document.createElement('div'); row.className='sensor-row'+(has?'':' stale'); row.dataset.idx=i;
     const ovr=overriddenIds.has(s.sensor_id);
     row.innerHTML=`<span class="sensor-dot" style="background:${cssRgb(rgb)}"></span>
-      <span class="sensor-id">${s.label.replace('Marquesina ','')}</span>
+      <span class="sensor-id">${s.label.replace((AREA&&AREA.name?AREA.name+' ':''),'')}</span>
       <span class="sensor-pos">${s.external?'EXT':('L'+(s.line||'?')+'·'+(s.pos||'?'))}</span>
       <span class="sensor-val">${has?(ovr?'≈':'')+val.toFixed(1)+unit:'s/d'}</span>`;
     row.addEventListener('click',()=>{document.querySelectorAll('.sensor-row').forEach(r=>r.classList.remove('active'));row.classList.add('active');
@@ -1028,18 +1230,42 @@ async function fetchConfig(){
   catch(e){ console.warn('config.json fallback:',e); CONFIG_SOURCE='fallback'; return FALLBACK_CONFIG; }
 }
 
+let _metricFromDb={};
 async function loadAll(){
   showOverlay('Cargando…','',false);
   CONFIG=await fetchConfig();
+  AREAS=normalizeAreas(CONFIG).sort((a,b)=>areaMinId(a)-areaMinId(b));
+  if(!AREAS.length) throw new Error('config.json no define áreas.');
+  populateAreaSelect();
+  const want=(new URLSearchParams(location.search)).get('area');
+  setActiveArea(AREAS.find(a=>a.id===want)||AREAS[0]);
   let readingsBySensor, metricFromDb={};
-  if(DATA_SOURCE==='proxy'){ readingsBySensor=await loadFromProxy(); }
+  if(DATA_SOURCE==='proxy'){ readingsBySensor=await loadFromProxy(AREA.id); }
   else if(DATA_SOURCE==='snapshot'){ readingsBySensor=await loadFromSnapshot(); }
   else if(DATA_SOURCE==='api'){ readingsBySensor=await loadFromAPI(); }
   else { const r=await loadFromDB(); readingsBySensor=r.readingsBySensor; metricFromDb=r.metricFromDb; }
-  buildModel(CONFIG,readingsBySensor,metricFromDb);
-  if(!SENSORS.length) throw new Error('config.json no define sensores válidos.');
-  currentMetric='temp'; setMetricButtons();
-  buildStatic(); frameCamera(); applyState(); writeStatus(); hideOverlay();
+  LAST_READINGS=readingsBySensor; _metricFromDb=metricFromDb;
+  const totalMapped=AREAS.reduce((n,a)=>n+(a.sensors||[]).filter(s=>readingsBySensor[s.sensor_id]&&readingsBySensor[s.sensor_id].length).length,0);
+  if(totalMapped===0 && DATA_SOURCE!=='demo') { /* keep going: render empty rather than error */ }
+  renderActiveArea(); hideOverlay();
+}
+// Rebuild the scene for the active area from the already-fetched data (no refetch on switch).
+function renderActiveArea(reason){
+  buildModel(AREA, LAST_READINGS||{}, _metricFromDb||{});
+  setMetricButtons(); buildStatic(); frameCamera(); applyState(); writeStatus(reason); syncAreaSelect();
+}
+function populateAreaSelect(){ const sel=$('area-select'); if(!sel) return;
+  sel.innerHTML=AREAS.map(a=>`<option value="${a.id}">${(a.name||a.id)}</option>`).join(''); sel.style.display=AREAS.length>1?'':'none'; }
+function syncAreaSelect(){ const sel=$('area-select'); if(sel&&AREA) sel.value=AREA.id; }
+async function selectArea(id){ const a=AREAS.find(x=>x.id===id); if(!a||a===AREA) return;
+  setActiveArea(a);
+  try{ const u=new URL(location.href); u.searchParams.set('area',id); history.replaceState(null,'',u); }catch(e){}
+  if(window.matchMedia&&window.matchMedia('(max-width: 860px)').matches) toggleDrawer(false);
+  try{
+    if(DATA_SOURCE==='proxy'){ LAST_READINGS=await loadFromProxy(a.id); }   // fresh data for this area
+    // snapshot/api/db already hold every area in LAST_READINGS → no refetch needed
+    renderActiveArea(); hideOverlay();
+  }catch(e){ hideOverlay(); showOverlay('No se pudo cargar el área','Detalle: '+e.message,true); console.error('selectArea load failed:',e); syncAreaSelect(); }
 }
 
 // ── Combined-JSON sources (snapshot file OR Cloudflare proxy — identical shape) ──
@@ -1058,12 +1284,13 @@ async function loadFromSnapshot(){
   const r=await fetch(SNAPSHOT_PATH,{cache:'no-store'}); if(!r.ok) throw new Error(`No se pudo leer ${SNAPSHOT_PATH} (HTTP ${r.status})`);
   return ingestCombined(await r.json(),'snapshot');
 }
-async function loadFromProxy(){
+async function loadFromProxy(areaId){
   showOverlay('Consultando sensores…','vía proxy seguro',false);
   if(!/^https?:\/\//.test(PROXY_URL) || PROXY_URL.includes('REPLACE-WITH-YOUR-WORKER')) throw new Error('PROXY_URL no configurado');
   // Plain GET with no custom headers and no cache option => "simple" request => no CORS preflight.
-  // Cache-bust with a timestamp query param instead of cache:'no-store'.
-  const url = PROXY_URL + (PROXY_URL.includes('?')?'&':'?') + '_=' + Date.now();
+  // Cache-bust with a timestamp query param; request only the active area's sensors.
+  let url = PROXY_URL + (PROXY_URL.includes('?')?'&':'?') + '_=' + Date.now();
+  if(areaId) url += '&area=' + encodeURIComponent(areaId);
   const r=await fetch(url); if(!r.ok) throw new Error(`Proxy HTTP ${r.status}`);
   const j=await r.json(); if(j&&j.error) throw new Error('Proxy: '+j.error);
   return ingestCombined(j,'proxy');
@@ -1090,7 +1317,7 @@ async function loadFromAPI(){
   const end=Math.floor(Date.now()/60000)*60000;    // round down to the complete minute
   const start=end-API_HOURS*3600e3;                // last clock hour
   const startStr=fmtApiDate(start), endStr=fmtApiDate(end), yr=parseInt(startStr.slice(0,4),10);
-  const list=(CONFIG.sensors||[]); const readingsBySensor={};
+  const list=(AREA.sensors||[]); const readingsBySensor={};
   let done=0, ok=0, fail=0, total=0, idx=0, firstErr='';
   const setP=()=>{ $('overlay-msg').textContent='Consultando API…'; $('overlay-sub').textContent=`${done}/${list.length} sensores`; };
   setP();
@@ -1120,8 +1347,8 @@ async function loadFromDB(){
   const meta=db.exec(`SELECT sensor_id,type FROM sensor WHERE module_id='${MODULE_ID}' AND is_active=1`);
   const metricFromDb={}; const typeRe=/^(humedad|temperatura)/i;
   if(meta.length) for(const r of meta[0].values){ const m=String(r[1]||'').trim().match(typeRe); if(m) metricFromDb[r[0]]=m[1].toLowerCase().startsWith('t')?'temp':'hum'; }
-  const ids=(CONFIG.sensors||[]).map(s=>s.sensor_id);
-  const metricById={}; (CONFIG.sensors||[]).forEach(s=>metricById[s.sensor_id]=s.metric||metricFromDb[s.sensor_id]);
+  const ids=(AREA.sensors||[]).map(s=>s.sensor_id);
+  const metricById={}; (AREA.sensors||[]).forEach(s=>metricById[s.sensor_id]=s.metric||metricFromDb[s.sensor_id]);
   const readingsBySensor={}; let total=0,corrupt=0;
   if(ids.length){
     const data=db.exec(`SELECT sensor_id,measure_date,data_value FROM sensor_data WHERE sensor_id IN (${ids.join(',')})`);
@@ -1137,13 +1364,15 @@ async function loadFromDB(){
 
 function loadDemo(reason){
   CONFIG=CONFIG||FALLBACK_CONFIG;
+  if(!AREAS.length){ AREAS=normalizeAreas(CONFIG).sort((a,b)=>areaMinId(a)-areaMinId(b)); populateAreaSelect(); }
+  if(!AREA) setActiveArea(AREAS[0]);
   const now=Date.now(); const readingsBySensor={}; const metricFromDb={};
-  (CONFIG.sensors||[]).forEach(s=>{ metricFromDb[s.sensor_id]=s.metric;
+  AREAS.forEach(ar=>(ar.sensors||[]).forEach(s=>{ metricFromDb[s.sensor_id]=s.metric;
     const base=s.metric==='temp'?27:56; const jitter=(s.sensor_id%7)-3;
-    readingsBySensor[s.sensor_id]=[{t:now,v:base+jitter}]; });
-  META={rows:(CONFIG.sensors||[]).length,corrupted:0,mapped:0,source:'demo'};
-  buildModel(CONFIG,readingsBySensor,metricFromDb);
-  currentMetric='temp'; setMetricButtons(); buildStatic(); frameCamera(); applyState(); writeStatus(reason); hideOverlay();
+    readingsBySensor[s.sensor_id]=[{t:now,v:base+jitter}]; }));
+  LAST_READINGS=readingsBySensor; _metricFromDb=metricFromDb;
+  META={rows:Object.keys(readingsBySensor).length,corrupted:0,mapped:0,source:'demo'};
+  renderActiveArea(reason);
 }
 
 async function boot(){ try{ await loadAll(); }
@@ -1171,6 +1400,7 @@ $('sl-size').addEventListener('input',function(){ ptsSizeFactor=this.value/12; $
   el.addEventListener('click',function(){this.classList.toggle('on');grp.visible=this.classList.contains('on');if(id==='tog-box')gAxis.visible=grp.visible;
     if(id==='tog-sun'){ const hs=document.getElementById('hud-sun'); if(hs) hs.style.display=grp.visible?'':'none'; if(grp.visible) updateSun(currentTargetMs()); }});});
 $('btn-reload').addEventListener('click',boot);
+{ const _as=$('area-select'); if(_as) _as.addEventListener('change',function(){ selectArea(this.value); }); }
 
 // ── mobile drawer ────────────────────────────────────────────────────────────
 const _aside=document.querySelector('aside'), _backdrop=$('backdrop'), _menuBtn=$('menu-btn');
@@ -1194,7 +1424,7 @@ canvas.addEventListener('mousemove',e=>{ const rect=canvas.getBoundingClientRect
     canvas.style.cursor='crosshair';
   } else { tooltip.style.display='none'; canvas.style.cursor='grab'; }});
 
-function resize(){const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix(); if(typeof SUN_LAT!=='undefined') updateSky(currentTargetMs());}
+function resize(){const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix(); if(SUN_FRENTE) updateSky(currentTargetMs());}
 window.addEventListener('resize',resize); resize();
 (function animate(){requestAnimationFrame(animate);controls.update();
   gPts.children.forEach(c=>{if(c.userData.isRing)c.lookAt(camera.position);});
