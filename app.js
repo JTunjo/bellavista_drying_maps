@@ -766,7 +766,7 @@ function compassLabel(deg){
 // Top SKY_TOP_FRAC of the canvas is sky (varies with the hour); below is black,
 // with a few-px blend so there's no hard line. Morning vs afternoon use different
 // palettes (amanecer rojizo vs atardecer/ocaso violáceo) even at equal altitude.
-const SKY_TOP_FRAC = 0.35;
+const SKY_TOP_FRAC = 0.10;
 const SKY_FADE_PX  = 10;
 const SKY_BLACK    = '#05080c';
 const SKY_MORNING = [
