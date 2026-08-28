@@ -1,450 +1,630 @@
 {
   "_readme": [
-    "Coordenadas en CENTIMETROS, medidas desde la esquina INFERIOR-IZQUIERDA-FRONTAL (0,0,0).",
-    "x = ancho (izquierda->derecha) | y = profundidad (frente->fondo) | z = altura (piso->techo).",
-    "Ej: area x:440,y:1700,z:230 => 4.40m ancho, 17m profundidad, 2.30m alto.",
-    "Ej: sensor x:210,y:125,z:110 => 1.25m adentro, 1.10m de altura, a 2.10m del muro izquierdo.",
-    "Las posiciones de los sensores aqui son PLACEHOLDERS: reemplazalas con tus medidas reales.",
-    "La altura (z) puede diferir por sensor dentro de una misma linea.",
-    "Sensores EXTERNOS (contraste): agrega \"external\": true a un sensor para ubicarlo FUERA del recinto.",
-    "Puedes usar coordenadas negativas (ej. y:-150 = 1.5m frente a FRENTE). Los externos se dibujan como rombo,",
-    "pero NO afectan el campo 3D, la escala de color ni las estadisticas (min/max/prom/σ).",
-    "Sensor con lectura dudosa antes de recambio: agrega \"replaceBefore\":\"YYYY-MM-DDTHH:MM:SS-05:00\"",
-    "y \"replaceWith\":\"mean\". Solo para VISUALIZACION: en ventanas anteriores a esa fecha, el valor mostrado",
-    "se reemplaza por la media de los demas sensores interiores de la misma metrica (marcado con ≈)."
+    "Multi-area. Cada objeto en 'areas' es un recinto independiente con sus medidas, geo, features y sensores.",
+    "El selector del encabezado elige el area activa; orden por min(sensor_id).",
+    "Coordenadas en CENTIMETROS desde la esquina INFERIOR-IZQUIERDA-FRONTAL (0,0,0).",
+    "x=ancho(izq->der) | y=profundidad(frente->fondo) | z=altura(piso->techo).",
+    "area.geo.front = GPS en y=0 (FRENTE); area.geo.back = GPS en y=max (ATRAS). Orientan el sol (solo se usa el rumbo).",
+    "sensor_id unico en TODAS las areas. apiName = nombre exacto que espera la API.",
+    "external:true: sensor fuera, no afecta campo/escala/estadisticas. replaceBefore/replaceWith: sustitucion visual."
   ],
-  "area": {
-    "x": 440,
-    "y": 1700,
-    "z": 230
-  },
-  "features": [
+  "areas": [
     {
-      "name": "Puerta",
-      "type": "door",
-      "x": 0,
-      "y": 20,
-      "z": 50
+      "id": "marquesina",
+      "name": "Marquesina",
+      "area": {
+        "x": 440,
+        "y": 1700,
+        "z": 230
+      },
+      "geo": {
+        "front": {
+          "lat": 5.078066,
+          "lon": -75.585393
+        },
+        "back": {
+          "lat": 5.078166,
+          "lon": -75.585503
+        }
+      },
+      "features": [
+        {
+          "name": "Puerta",
+          "type": "door",
+          "x": 0,
+          "y": 20,
+          "z": 50
+        },
+        {
+          "name": "Ventana E",
+          "type": "window",
+          "x": 440,
+          "y": 410,
+          "z": 220
+        },
+        {
+          "name": "Ventana O",
+          "type": "window",
+          "x": 440,
+          "y": 1220,
+          "z": 220
+        }
+      ],
+      "sensors": [
+        {
+          "sensor_id": 302,
+          "metric": "temp",
+          "label": "Marquesina T1",
+          "line": 1,
+          "pos": 1,
+          "x": 70,
+          "y": 280,
+          "z": 113,
+          "apiName": "Temperatura 1-1-302"
+        },
+        {
+          "sensor_id": 301,
+          "metric": "hum",
+          "label": "Marquesina H1",
+          "line": 1,
+          "pos": 1,
+          "x": 70,
+          "y": 280,
+          "z": 113,
+          "apiName": "Humedad 1-1-301"
+        },
+        {
+          "sensor_id": 304,
+          "metric": "temp",
+          "label": "Marquesina T2",
+          "line": 1,
+          "pos": 2,
+          "x": 204,
+          "y": 280,
+          "z": 178,
+          "apiName": "Temperatura 1-2-304"
+        },
+        {
+          "sensor_id": 303,
+          "metric": "hum",
+          "label": "Marquesina H2",
+          "line": 1,
+          "pos": 2,
+          "x": 204,
+          "y": 280,
+          "z": 178,
+          "apiName": "Humedad 1-2-303"
+        },
+        {
+          "sensor_id": 306,
+          "metric": "temp",
+          "label": "Marquesina T3",
+          "line": 1,
+          "pos": 3,
+          "x": 355,
+          "y": 280,
+          "z": 118,
+          "apiName": "Temperatura 1-3-306"
+        },
+        {
+          "sensor_id": 305,
+          "metric": "hum",
+          "label": "Marquesina H3",
+          "line": 1,
+          "pos": 3,
+          "x": 355,
+          "y": 280,
+          "z": 118,
+          "apiName": "Humedad 1-3-305"
+        },
+        {
+          "sensor_id": 308,
+          "metric": "temp",
+          "label": "Marquesina T4",
+          "line": 2,
+          "pos": 1,
+          "x": 70,
+          "y": 540,
+          "z": 215,
+          "apiName": "Temperatura 2-1-308"
+        },
+        {
+          "sensor_id": 307,
+          "metric": "hum",
+          "label": "Marquesina H4",
+          "line": 2,
+          "pos": 1,
+          "x": 70,
+          "y": 540,
+          "z": 215,
+          "apiName": "Humedad 2-1-307"
+        },
+        {
+          "sensor_id": 310,
+          "metric": "temp",
+          "label": "Marquesina T5",
+          "line": 2,
+          "pos": 2,
+          "x": 204,
+          "y": 540,
+          "z": 124,
+          "apiName": "Temperatura 2-2-310"
+        },
+        {
+          "sensor_id": 309,
+          "metric": "hum",
+          "label": "Marquesina H5",
+          "line": 2,
+          "pos": 2,
+          "x": 204,
+          "y": 540,
+          "z": 124,
+          "apiName": "Humedad 2-2-309"
+        },
+        {
+          "sensor_id": 312,
+          "metric": "temp",
+          "label": "Marquesina T6",
+          "line": 2,
+          "pos": 3,
+          "x": 355,
+          "y": 540,
+          "z": 183,
+          "apiName": "Temperatura 2-3-312"
+        },
+        {
+          "sensor_id": 311,
+          "metric": "hum",
+          "label": "Marquesina H6",
+          "line": 2,
+          "pos": 3,
+          "x": 355,
+          "y": 540,
+          "z": 183,
+          "replaceBefore": "2026-08-23T12:00:00-05:00",
+          "replaceWith": "mean",
+          "apiName": "Humedad 2-3-311"
+        },
+        {
+          "sensor_id": 314,
+          "metric": "temp",
+          "label": "Marquesina T7",
+          "line": 3,
+          "pos": 1,
+          "x": 70,
+          "y": 800,
+          "z": 118,
+          "apiName": "Temperatura 3-1-314"
+        },
+        {
+          "sensor_id": 313,
+          "metric": "hum",
+          "label": "Marquesina H7",
+          "line": 3,
+          "pos": 1,
+          "x": 70,
+          "y": 800,
+          "z": 118,
+          "apiName": "Humedad 3-1-313"
+        },
+        {
+          "sensor_id": 316,
+          "metric": "temp",
+          "label": "Marquesina T8",
+          "line": 3,
+          "pos": 2,
+          "x": 204,
+          "y": 800,
+          "z": 177,
+          "apiName": "Temperatura 3-2-316"
+        },
+        {
+          "sensor_id": 315,
+          "metric": "hum",
+          "label": "Marquesina H8",
+          "line": 3,
+          "pos": 2,
+          "x": 204,
+          "y": 800,
+          "z": 177,
+          "apiName": "Humedad 3-2-315"
+        },
+        {
+          "sensor_id": 318,
+          "metric": "temp",
+          "label": "Marquesina T9",
+          "line": 3,
+          "pos": 3,
+          "x": 355,
+          "y": 800,
+          "z": 126,
+          "apiName": "Temperatura 3-3-318"
+        },
+        {
+          "sensor_id": 317,
+          "metric": "hum",
+          "label": "Marquesina H9",
+          "line": 3,
+          "pos": 3,
+          "x": 355,
+          "y": 800,
+          "z": 126,
+          "apiName": "Humedad 3-3-317"
+        },
+        {
+          "sensor_id": 320,
+          "metric": "temp",
+          "label": "Marquesina T10",
+          "line": 4,
+          "pos": 1,
+          "x": 70,
+          "y": 1100,
+          "z": 195,
+          "apiName": "Temperatura 4-1-320"
+        },
+        {
+          "sensor_id": 319,
+          "metric": "hum",
+          "label": "Marquesina H10",
+          "line": 4,
+          "pos": 1,
+          "x": 70,
+          "y": 1100,
+          "z": 195,
+          "apiName": "Humedad 4-1-319"
+        },
+        {
+          "sensor_id": 322,
+          "metric": "temp",
+          "label": "Marquesina T11",
+          "line": 4,
+          "pos": 2,
+          "x": 204,
+          "y": 1100,
+          "z": 117,
+          "apiName": "Temperatura 4-2-322"
+        },
+        {
+          "sensor_id": 321,
+          "metric": "hum",
+          "label": "Marquesina H11",
+          "line": 4,
+          "pos": 2,
+          "x": 204,
+          "y": 1100,
+          "z": 117,
+          "apiName": "Humedad 4-2-321"
+        },
+        {
+          "sensor_id": 324,
+          "metric": "temp",
+          "label": "Marquesina T12",
+          "line": 4,
+          "pos": 3,
+          "x": 355,
+          "y": 1100,
+          "z": 177,
+          "apiName": "Temperatura 4-3-324"
+        },
+        {
+          "sensor_id": 323,
+          "metric": "hum",
+          "label": "Marquesina H12",
+          "line": 4,
+          "pos": 3,
+          "x": 355,
+          "y": 1100,
+          "z": 177,
+          "apiName": "Humedad 4-3-323"
+        },
+        {
+          "sensor_id": 326,
+          "metric": "temp",
+          "label": "Marquesina T13",
+          "line": 5,
+          "pos": 1,
+          "x": 70,
+          "y": 1340,
+          "z": 119,
+          "apiName": "Temperatura  5-1-326"
+        },
+        {
+          "sensor_id": 325,
+          "metric": "hum",
+          "label": "Marquesina H13",
+          "line": 5,
+          "pos": 1,
+          "x": 70,
+          "y": 1340,
+          "z": 119,
+          "apiName": "Humedad 5-1-325"
+        },
+        {
+          "sensor_id": 328,
+          "metric": "temp",
+          "label": "Marquesina T14",
+          "line": 5,
+          "pos": 2,
+          "x": 204,
+          "y": 1340,
+          "z": 197,
+          "apiName": "Temperatura 5-2-328"
+        },
+        {
+          "sensor_id": 327,
+          "metric": "hum",
+          "label": "Marquesina H14",
+          "line": 5,
+          "pos": 2,
+          "x": 204,
+          "y": 1340,
+          "z": 197,
+          "apiName": "Humedad  5-2-327"
+        },
+        {
+          "sensor_id": 330,
+          "metric": "temp",
+          "label": "Marquesina T15",
+          "line": 5,
+          "pos": 3,
+          "x": 355,
+          "y": 1340,
+          "z": 145,
+          "apiName": "Temperatura 5-3-330"
+        },
+        {
+          "sensor_id": 329,
+          "metric": "hum",
+          "label": "Marquesina H15",
+          "line": 5,
+          "pos": 3,
+          "x": 355,
+          "y": 1340,
+          "z": 145,
+          "apiName": "Humedad 5-3-329"
+        },
+        {
+          "sensor_id": 331,
+          "metric": "hum",
+          "label": "Marquesina H16",
+          "line": 6,
+          "pos": 1,
+          "external": true,
+          "x": -100,
+          "y": 280,
+          "z": 260,
+          "apiName": "Humedad 6-1-331"
+        },
+        {
+          "sensor_id": 332,
+          "metric": "temp",
+          "label": "Marquesina T16",
+          "line": 6,
+          "pos": 1,
+          "external": true,
+          "x": -100,
+          "y": 280,
+          "z": 260,
+          "apiName": "Temperatura 6-1-332"
+        },
+        {
+          "sensor_id": 333,
+          "metric": "hum",
+          "label": "Marquesina H17",
+          "line": 6,
+          "pos": 2,
+          "external": true,
+          "x": -100,
+          "y": 800,
+          "z": 260,
+          "apiName": "Humedad 6-2-333"
+        },
+        {
+          "sensor_id": 334,
+          "metric": "temp",
+          "label": "Marquesina T17",
+          "line": 6,
+          "pos": 2,
+          "external": true,
+          "x": -100,
+          "y": 800,
+          "z": 260,
+          "apiName": "Temperatura 6-2-334"
+        },
+        {
+          "sensor_id": 335,
+          "metric": "hum",
+          "label": "Marquesina H18",
+          "line": 6,
+          "pos": 3,
+          "external": true,
+          "x": -100,
+          "y": 1340,
+          "z": 210,
+          "apiName": "Humedad 6-3-335"
+        },
+        {
+          "sensor_id": 336,
+          "metric": "temp",
+          "label": "Marquesina T18",
+          "line": 6,
+          "pos": 3,
+          "external": true,
+          "x": -100,
+          "y": 1340,
+          "z": 210,
+          "apiName": "Temperatura 6-3-336"
+        }
+      ]
     },
     {
-      "name": "Ventana E",
-      "type": "window",
-      "x": 440,
-      "y": 410,
-      "z": 220
-    },
-    {
-      "name": "Ventana O",
-      "type": "window",
-      "x": 440,
-      "y": 1220,
-      "z": 220
-    }
-  ],
-  "sensors": [
-    {
-      "sensor_id": 302,
-      "metric": "temp",
-      "label": "Marquesina T1",
-      "line": 1,
-      "pos": 1,
-      "x": 70,
-      "y": 280,
-      "z": 113,
-      "apiName": "Temperatura 1-1-302"
-    },
-    {
-      "sensor_id": 301,
-      "metric": "hum",
-      "label": "Marquesina H1",
-      "line": 1,
-      "pos": 1,
-      "x": 70,
-      "y": 280,
-      "z": 113,
-      "apiName": "Humedad 1-1-301"
-    },
-    {
-      "sensor_id": 304,
-      "metric": "temp",
-      "label": "Marquesina T2",
-      "line": 1,
-      "pos": 2,
-      "x": 204,
-      "y": 280,
-      "z": 178,
-      "apiName": "Temperatura 1-2-304"
-    },
-    {
-      "sensor_id": 303,
-      "metric": "hum",
-      "label": "Marquesina H2",
-      "line": 1,
-      "pos": 2,
-      "x": 204,
-      "y": 280,
-      "z": 178,
-      "apiName": "Humedad 1-2-303"
-    },
-    {
-      "sensor_id": 306,
-      "metric": "temp",
-      "label": "Marquesina T3",
-      "line": 1,
-      "pos": 3,
-      "x": 355,
-      "y": 280,
-      "z": 118,
-      "apiName": "Temperatura 1-3-306"
-    },
-    {
-      "sensor_id": 305,
-      "metric": "hum",
-      "label": "Marquesina H3",
-      "line": 1,
-      "pos": 3,
-      "x": 355,
-      "y": 280,
-      "z": 118,
-      "apiName": "Humedad 1-3-305"
-    },
-    {
-      "sensor_id": 308,
-      "metric": "temp",
-      "label": "Marquesina T4",
-      "line": 2,
-      "pos": 1,
-      "x": 70,
-      "y": 540,
-      "z": 215,
-      "apiName": "Temperatura 2-1-308"
-    },
-    {
-      "sensor_id": 307,
-      "metric": "hum",
-      "label": "Marquesina H4",
-      "line": 2,
-      "pos": 1,
-      "x": 70,
-      "y": 540,
-      "z": 215,
-      "apiName": "Humedad 2-1-307"
-    },
-    {
-      "sensor_id": 310,
-      "metric": "temp",
-      "label": "Marquesina T5",
-      "line": 2,
-      "pos": 2,
-      "x": 204,
-      "y": 540,
-      "z": 124,
-      "apiName": "Temperatura 2-2-310"
-    },
-    {
-      "sensor_id": 309,
-      "metric": "hum",
-      "label": "Marquesina H5",
-      "line": 2,
-      "pos": 2,
-      "x": 204,
-      "y": 540,
-      "z": 124,
-      "apiName": "Humedad 2-2-309"
-    },
-    {
-      "sensor_id": 312,
-      "metric": "temp",
-      "label": "Marquesina T6",
-      "line": 2,
-      "pos": 3,
-      "x": 355,
-      "y": 540,
-      "z": 183,
-      "apiName": "Temperatura 2-3-312"
-    },
-    {
-      "sensor_id": 311,
-      "metric": "hum",
-      "label": "Marquesina H6",
-      "line": 2,
-      "pos": 3,
-      "x": 355,
-      "y": 540,
-      "z": 183,
-      "replaceBefore": "2026-08-23T12:00:00-05:00",
-      "replaceWith": "mean",
-      "apiName": "Humedad 2-3-311"
-    },
-    {
-      "sensor_id": 314,
-      "metric": "temp",
-      "label": "Marquesina T7",
-      "line": 3,
-      "pos": 1,
-      "x": 70,
-      "y": 800,
-      "z": 118,
-      "apiName": "Temperatura 3-1-314"
-    },
-    {
-      "sensor_id": 313,
-      "metric": "hum",
-      "label": "Marquesina H7",
-      "line": 3,
-      "pos": 1,
-      "x": 70,
-      "y": 800,
-      "z": 118,
-      "apiName": "Humedad 3-1-313"
-    },
-    {
-      "sensor_id": 316,
-      "metric": "temp",
-      "label": "Marquesina T8",
-      "line": 3,
-      "pos": 2,
-      "x": 204,
-      "y": 800,
-      "z": 177,
-      "apiName": "Temperatura 3-2-316"
-    },
-    {
-      "sensor_id": 315,
-      "metric": "hum",
-      "label": "Marquesina H8",
-      "line": 3,
-      "pos": 2,
-      "x": 204,
-      "y": 800,
-      "z": 177,
-      "apiName": "Humedad 3-2-315"
-    },
-    {
-      "sensor_id": 318,
-      "metric": "temp",
-      "label": "Marquesina T9",
-      "line": 3,
-      "pos": 3,
-      "x": 355,
-      "y": 800,
-      "z": 126,
-      "apiName": "Temperatura 3-3-318"
-    },
-    {
-      "sensor_id": 317,
-      "metric": "hum",
-      "label": "Marquesina H9",
-      "line": 3,
-      "pos": 3,
-      "x": 355,
-      "y": 800,
-      "z": 126,
-      "apiName": "Humedad 3-3-317"
-    },
-    {
-      "sensor_id": 320,
-      "metric": "temp",
-      "label": "Marquesina T10",
-      "line": 4,
-      "pos": 1,
-      "x": 70,
-      "y": 1100,
-      "z": 195,
-      "apiName": "Temperatura 4-1-320"
-    },
-    {
-      "sensor_id": 319,
-      "metric": "hum",
-      "label": "Marquesina H10",
-      "line": 4,
-      "pos": 1,
-      "x": 70,
-      "y": 1100,
-      "z": 195,
-      "apiName": "Humedad 4-1-319"
-    },
-    {
-      "sensor_id": 322,
-      "metric": "temp",
-      "label": "Marquesina T11",
-      "line": 4,
-      "pos": 2,
-      "x": 204,
-      "y": 1100,
-      "z": 117,
-      "apiName": "Temperatura 4-2-322"
-    },
-    {
-      "sensor_id": 321,
-      "metric": "hum",
-      "label": "Marquesina H11",
-      "line": 4,
-      "pos": 2,
-      "x": 204,
-      "y": 1100,
-      "z": 117,
-      "apiName": "Humedad 4-2-321"
-    },
-    {
-      "sensor_id": 324,
-      "metric": "temp",
-      "label": "Marquesina T12",
-      "line": 4,
-      "pos": 3,
-      "x": 355,
-      "y": 1100,
-      "z": 177,
-      "apiName": "Temperatura 4-3-324"
-    },
-    {
-      "sensor_id": 323,
-      "metric": "hum",
-      "label": "Marquesina H12",
-      "line": 4,
-      "pos": 3,
-      "x": 355,
-      "y": 1100,
-      "z": 177,
-      "apiName": "Humedad 4-3-323"
-    },
-    {
-      "sensor_id": 326,
-      "metric": "temp",
-      "label": "Marquesina T13",
-      "line": 5,
-      "pos": 1,
-      "x": 70,
-      "y": 1340,
-      "z": 119,
-      "apiName": "Temperatura  5-1-326"
-    },
-    {
-      "sensor_id": 325,
-      "metric": "hum",
-      "label": "Marquesina H13",
-      "line": 5,
-      "pos": 1,
-      "x": 70,
-      "y": 1340,
-      "z": 119,
-      "apiName": "Humedad 5-1-325"
-    },
-    {
-      "sensor_id": 328,
-      "metric": "temp",
-      "label": "Marquesina T14",
-      "line": 5,
-      "pos": 2,
-      "x": 204,
-      "y": 1340,
-      "z": 197,
-      "apiName": "Temperatura 5-2-328"
-    },
-    {
-      "sensor_id": 327,
-      "metric": "hum",
-      "label": "Marquesina H14",
-      "line": 5,
-      "pos": 2,
-      "x": 204,
-      "y": 1340,
-      "z": 197,
-      "apiName": "Humedad  5-2-327"
-    },
-    {
-      "sensor_id": 330,
-      "metric": "temp",
-      "label": "Marquesina T15",
-      "line": 5,
-      "pos": 3,
-      "x": 355,
-      "y": 1340,
-      "z": 145,
-      "apiName": "Temperatura 5-3-330"
-    },
-    {
-      "sensor_id": 329,
-      "metric": "hum",
-      "label": "Marquesina H15",
-      "line": 5,
-      "pos": 3,
-      "x": 355,
-      "y": 1340,
-      "z": 145,
-      "apiName": "Humedad 5-3-329"
-    },
-    {
-      "sensor_id": 331,
-      "metric": "hum",
-      "label": "Marquesina H16",
-      "line": 6,
-      "pos": 1,
-      "external": true,
-      "x": -100,
-      "y": 280,
-      "z": 260,
-      "apiName": "Humedad 6-1-331"
-    },
-    {
-      "sensor_id": 332,
-      "metric": "temp",
-      "label": "Marquesina T16",
-      "line": 6,
-      "pos": 1,
-      "external": true,
-      "x": -100,
-      "y": 280,
-      "z": 260,
-      "apiName": "Temperatura 6-1-332"
-    },
-    {
-      "sensor_id": 333,
-      "metric": "hum",
-      "label": "Marquesina H17",
-      "line": 6,
-      "pos": 2,
-      "external": true,
-      "x": -100,
-      "y": 800,
-      "z": 260,
-      "apiName": "Humedad 6-2-333"
-    },
-    {
-      "sensor_id": 334,
-      "metric": "temp",
-      "label": "Marquesina T17",
-      "line": 6,
-      "pos": 2,
-      "external": true,
-      "x": -100,
-      "y": 800,
-      "z": 260,
-      "apiName": "Temperatura 6-2-334"
-    },
-    {
-      "sensor_id": 335,
-      "metric": "hum",
-      "label": "Marquesina H18",
-      "line": 6,
-      "pos": 3,
-      "external": true,
-      "x": -100,
-      "y": 1340,
-      "z": 210,
-      "apiName": "Humedad 6-3-335"
-    },
-    {
-      "sensor_id": 336,
-      "metric": "temp",
-      "label": "Marquesina T18",
-      "line": 6,
-      "pos": 3,
-      "external": true,
-      "x": -100,
-      "y": 1340,
-      "z": 210,
-      "apiName": "Temperatura 6-3-336"
+      "id": "bodega",
+      "name": "Bodega",
+      "area": {
+        "x": 378,
+        "y": 980,
+        "z": 212
+      },
+      "geo": {
+        "front": {
+          "lat": 5.07805,
+          "lon": -75.585389
+        },
+        "back": {
+          "lat": 5.078109,
+          "lon": -75.585454
+        }
+      },
+      "features": [
+        {
+          "name": "Puerta",
+          "type": "door",
+          "x": 378,
+          "y": 30,
+          "z": 120
+        },
+        {
+          "name": "Ventana",
+          "type": "window",
+          "x": 378,
+          "y": 640,
+          "z": 160
+        }
+      ],
+      "sensors": [
+        {
+          "sensor_id": 339,
+          "metric": "hum",
+          "label": "Bodega H1",
+          "line": 1,
+          "pos": 1,
+          "x": 186,
+          "y": 781,
+          "z": 126,
+          "apiName": "Humedad 1"
+        },
+        {
+          "sensor_id": 340,
+          "metric": "temp",
+          "label": "Bodega T1",
+          "line": 1,
+          "pos": 1,
+          "x": 186,
+          "y": 781,
+          "z": 126,
+          "apiName": "Temperatura 1"
+        },
+        {
+          "sensor_id": 341,
+          "metric": "hum",
+          "label": "Bodega H2",
+          "line": 1,
+          "pos": 2,
+          "x": 186,
+          "y": 781,
+          "z": 66,
+          "apiName": "Humedad 2"
+        },
+        {
+          "sensor_id": 342,
+          "metric": "temp",
+          "label": "Bodega T2",
+          "line": 1,
+          "pos": 2,
+          "x": 186,
+          "y": 781,
+          "z": 66,
+          "apiName": "Temperatura 2"
+        },
+        {
+          "sensor_id": 343,
+          "metric": "hum",
+          "label": "Bodega H3",
+          "line": 1,
+          "pos": 3,
+          "x": 378,
+          "y": 591,
+          "z": 196,
+          "apiName": "Humedad 3"
+        },
+        {
+          "sensor_id": 344,
+          "metric": "temp",
+          "label": "Bodega T3",
+          "line": 1,
+          "pos": 3,
+          "x": 378,
+          "y": 591,
+          "z": 196,
+          "apiName": "Temperatura 3"
+        },
+        {
+          "sensor_id": 345,
+          "metric": "hum",
+          "label": "Bodega H4",
+          "line": 1,
+          "pos": 4,
+          "x": 140,
+          "y": 436,
+          "z": 212,
+          "apiName": "Humedad 4"
+        },
+        {
+          "sensor_id": 346,
+          "metric": "temp",
+          "label": "Bodega T4",
+          "line": 1,
+          "pos": 4,
+          "x": 140,
+          "y": 436,
+          "z": 212,
+          "apiName": "Temperatura 4"
+        },
+        {
+          "sensor_id": 347,
+          "metric": "hum",
+          "label": "Bodega H5",
+          "line": 1,
+          "pos": 5,
+          "x": 83,
+          "y": 260,
+          "z": 212,
+          "apiName": "Humedad 5"
+        },
+        {
+          "sensor_id": 348,
+          "metric": "temp",
+          "label": "Bodega T5",
+          "line": 1,
+          "pos": 5,
+          "x": 83,
+          "y": 260,
+          "z": 212,
+          "apiName": "Temperatura 5"
+        },
+        {
+          "sensor_id": 349,
+          "metric": "hum",
+          "label": "Bodega H6",
+          "line": 1,
+          "pos": 6,
+          "x": 0,
+          "y": 466,
+          "z": 197,
+          "apiName": "Humedad 6"
+        },
+        {
+          "sensor_id": 350,
+          "metric": "temp",
+          "label": "Bodega T6",
+          "line": 1,
+          "pos": 6,
+          "x": 0,
+          "y": 466,
+          "z": 197,
+          "apiName": "Temperatura 6"
+        }
+      ]
     }
   ]
 }
